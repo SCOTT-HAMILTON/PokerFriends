@@ -13,6 +13,11 @@ bool GamePlay::playerExist(const QString &peerNick) const
     return findPlayerWithPeerNick(peerNick) != players.end();
 }
 
+bool GamePlay::nicknameExists(const QString &nickname) const
+{
+    return findPlayerWithNickname(nickname) != players.end();
+}
+
 void GamePlay::addPlayer(const QString &nickname, const QString &peerNick)
 {
     players.append(Player{nickname, peerNick});
@@ -31,9 +36,19 @@ const QList<Player> &GamePlay::getPlayers() const
     return players;
 }
 
+int GamePlay::playersCount() const
+{
+    return players.size();
+}
+
 const QList<Player>::const_iterator GamePlay::findPlayerWithPeerNick(const QString &peerNick) const
 {
     return std::find_if(players.begin(), players.end(), [&peerNick](const Player &p){ return p.peernickname == peerNick;});
+}
+
+const QList<Player>::const_iterator GamePlay::findPlayerWithNickname(const QString &nickname) const
+{
+    return std::find_if(players.begin(), players.end(), [&nickname](const Player &p){ return p.nickname == nickname;});
 }
 
 QString GamePlay::playersReport() const

@@ -5,6 +5,7 @@ InitialMenu::InitialMenu(QWidget *parent) : QWidget(parent),
   ui(new Ui::Widget)
 {
   ui->setupUi(this);
+  ui->nicknameRefusedLabel->hide();
 }
 
 InitialMenu::~InitialMenu()
@@ -15,4 +16,9 @@ InitialMenu::~InitialMenu()
 void InitialMenu::on_joinServerButton_clicked()
 {
     emit joinServerRequest(ui->nickNameLineEdit->text());
+}
+
+void InitialMenu::showNicknameRefusedLabel()
+{
+    ui->nicknameRefusedLabel->show();
 }

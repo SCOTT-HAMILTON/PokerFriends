@@ -13,7 +13,7 @@ class PlayerWidget : public QWidget
 public:
     explicit PlayerWidget(QWidget *parent = nullptr);
     void setName(const QString &name);
-    const QString &name() const;
+    QString name() const;
     ~PlayerWidget();
 
 private:

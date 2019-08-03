@@ -13,7 +13,7 @@ void PlayerWidget::setName(const QString &name)
     ui->label->setText(name);
 }
 
-const QString &PlayerWidget::name() const
+QString PlayerWidget::name() const
 {
     return ui->label->text();
 }

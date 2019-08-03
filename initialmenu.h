@@ -19,6 +19,8 @@ signals:
 
 public slots:
     void on_joinServerButton_clicked();
+    void showNicknameRefusedLabel();
+
 private:
     Ui::Widget *ui;
 
