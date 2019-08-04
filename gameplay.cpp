@@ -31,7 +31,7 @@ void GamePlay::removePlayer(const QString &peerNick)
     qDebug() << "size after : " << players.size();
 }
 
-const QList<Player> &GamePlay::getPlayers() const
+QList<Player> GamePlay::getPlayers() const
 {
     return players;
 }

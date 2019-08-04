@@ -1,5 +1,6 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
+#include "size.h"
 
 #include <QDebug>
 #include <iostream>
@@ -11,6 +12,11 @@ Widget::Widget(QWidget *parent) :
     QWidget(parent), gamewidget(nullptr), accepted(false),
     participantinit(false)
 {
+
+#ifdef Q_OS_ANDROID
+    setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
+    resize(720, 1310);
+#endif
 
     connect(&client, &Client::newMessage,
             this, &Widget::implNewMessage);
@@ -32,7 +38,7 @@ Widget::Widget(QWidget *parent) :
     AnswersForNicknameIsFine.timeOfFirstAnswer.setSingleShot(true);
 
     //PARTICIPANT COUNT
-    participantInitTimer.setInterval(5000);
+    participantInitTimer.setInterval(0);
     participantInitTimer.setSingleShot(true);
     participantInitTimer.start();
     initialmenu->setEnabled(false);
@@ -88,6 +94,7 @@ void Widget::implNewMessage(const QString &peerNick, const QString &message)
         QString playerNickname = msg.mid(11, -1);
         qDebug() << "nickname is " << playerNickname;
         gameplay.addPlayer(playerNickname, peerNick);
+        gamewidget->fetchPlayers(gameplay.getPlayers());
         client.sendMessage("Welcome "+playerNickname+", I'm "+nickname);//W
     }
     else if (msg.startsWith("Welcome ")){//W
@@ -103,6 +110,7 @@ void Widget::implNewMessage(const QString &peerNick, const QString &message)
         if (welcomedPlayer == nickname && !gameplay.playerExist(peerNick)){
             qDebug() << "Player welcomed us, his name is " << welcomingPlayer;
             gameplay.addPlayer(welcomingPlayer, peerNick);
+            gamewidget->fetchPlayers(gameplay.getPlayers());
         }else{
             qDebug() << "Player welcomed us, we already now him, it's " << welcomingPlayer;
         }
@@ -204,6 +212,7 @@ void Widget::implParticipantLeft(const QString &peerNick)
     qDebug() << "A PARTICIPANT LEFT : " << peerNick;
     if (gameplay.playerExist(peerNick)){
         gameplay.removePlayer(peerNick);
+        gamewidget->fetchPlayers(gameplay.getPlayers());
         std::cerr << gameplay.playersReport().toStdString() << '\n';
     }else{
         qDebug() << "unknow player, can't remove it (!";
@@ -212,6 +221,7 @@ void Widget::implParticipantLeft(const QString &peerNick)
 
 void Widget::switchToGameParty(QString nick)
 {
+
     QString devicename = client.nickName();
     nickname = nick;
     client.sendMessage("How many players are you ?");
@@ -220,6 +230,7 @@ void Widget::switchToGameParty(QString nick)
     AnswersForNicknameIsFine.timeOfFirstAnswer.start();
     initialmenu->hide();
     gamewidget = new GameWidget(7, this);
+    gamewidget->fetchPlayers(gameplay.getPlayers());
     gamewidget->show();
 }
 
@@ -284,9 +295,8 @@ void Widget::TryValidateNicknameFromPlayersAnswers()
     QList<QVariant> PlayersAnswers = AnswersForNicknameIsFine.answers;
     AnswersForNicknameIsFine.answers.clear();
     if (PlayersAnswers.size() == 0){
-        qDebug() << "CHANGED HERE HFJKDSHFKJSD";
         AnswersForNicknameIsFine.answered = true;
-        qDebug() << "Zero answers for nickname is fine, accepting ourself";
+        qDebug() << "\n\nZERO LOL answers for nickname is fine, accepting ourself\n\n";
         client.sendMessage("Hello, I'm "+nickname);
         accepted = true;
         return;
@@ -315,14 +325,15 @@ void Widget::TryValidateNicknameFromPlayersAnswers()
     bool answer = it->first;
     qDebug() << "Most given answer is, nickname is valid " << answer;
     if (answer){
-        qDebug() << "Nickname is validated";
-        client.sendMessage("Hello, I'm "+nickname);
-        accepted = true;
+        if (!accepted){
+            qDebug() << "\n\NICKNAME is validated\n\n";
+            client.sendMessage("Hello, I'm "+nickname);
+            accepted = true;
+        }
     }else{
         qDebug() << "Nickname is refused";
         promptNicknameAndtRetryValidation();
     }
-    qDebug() << "CHANGED HERE JHGHJG";
     AnswersForNicknameIsFine.answered = true;
 }
 
@@ -335,7 +346,6 @@ void Widget::promptNicknameAndtRetryValidation()
     AnswersForNumberOfPlayers.answers.clear();
 
     AnswersForNicknameIsFine.timeOfFirstAnswer.stop();
-    qDebug() << "CHANGED HERE FDFSGHJF";
     AnswersForNicknameIsFine.answered = false;
     if (AnswersForNicknameIsFine.answered){
         qDebug() << "Err, retry can't unanswered...";
@@ -390,9 +400,8 @@ void Widget::timeOutCheckPlayersNumberAndTryValidateNickname()
         return;
     }
     if (AnswersForNicknameIsFine.answers.size() == 0){
-        qDebug() << "CHANGED HERE SUBUBSBUBSU";
         AnswersForNicknameIsFine.answered = true;
-        qDebug() << "Zero answers for nickname is fine and time is out, accepting ourself";
+        qDebug() << "\n\nZERO TIME OUT answers for nickname is fine and time is out, accepting ourself\n\n";
         client.sendMessage("Hello, I'm "+nickname);
         accepted = true;
         return;
@@ -413,7 +422,6 @@ void Widget::resetAndEnableInitialMenu()
     AnswersForNumberOfPlayers.answers.clear();
 
     AnswersForNicknameIsFine.timeOfFirstAnswer.stop();
-    qDebug() << "CHANGED HERE FDFSGHJF";
     AnswersForNicknameIsFine.answered = false;
     if (AnswersForNicknameIsFine.answered){
         qDebug() << "Err, retry can't unanswered...";

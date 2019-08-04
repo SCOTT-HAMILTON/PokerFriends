@@ -1,6 +1,8 @@
 #include <QApplication>
+#include <QScreen>
 
 #include "widget.h"
+#include "size.h"
 
 #include <QtCore/QSettings>
 #include <QtNetwork/QNetworkConfigurationManager>
@@ -9,6 +11,38 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    qDebug() << QGuiApplication::screens().first()->availableSize();
+        {
+            int w = QGuiApplication::screens().first()->availableSize().width();
+            int h = QGuiApplication::screens().first()->availableSize().height();
+    #ifdef Q_OS_ANDROID
+            //LANDSCAPE VIEW or less than 18:9 (like 16:9)
+            if (w>=h/2){
+                Size::APP_SIZEH = h;
+                Size::APP_SIZEW = h/2;
+                Size::APP_X = (w-Size::APP_SIZEW)/2;
+            }
+            //for even more little ratio than 18:9 like 20:9
+            else {
+                Size::APP_SIZEW = w;
+                Size::APP_SIZEH = w*2;
+                Size::APP_Y = (h-Size::APP_SIZEH)/2;
+            }
+            Size::SIZE_FACTOR = static_cast<double>(Size::APP_SIZEH)/655.0;
+
+    #else
+            h -= 80;
+            Size::APP_SIZEH = h;
+            Size::APP_SIZEW = h*960/1310;
+            Size::SIZE_FACTOR = static_cast<double>(Size::APP_SIZEH)/655.0;
+
+    #endif
+
+        }
+
+        qDebug() << "SIZE_FACTOR : " << Size::SIZE_FACTOR;
+        qDebug() << "APP SIZE : " << Size::APP_SIZEW << ", " << Size::APP_SIZEH;
 
     QNetworkConfigurationManager manager;
     if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {

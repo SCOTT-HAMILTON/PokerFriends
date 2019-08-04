@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QList>
+#include <vector>
 #include <QPoint>
 
 #include "playerwidget.h"
@@ -22,12 +23,12 @@ class GameWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit GameWidget(int nbPlayers, QWidget *parent = nullptr);
+    explicit GameWidget(int nbPlayers = 8, QWidget *parent = nullptr);
     ~GameWidget();
     GridPos indexToPos(int index);
 
 public slots:
-    void fetchPlayers(const QList<Player> &list);
+    void fetchPlayers(const QList<Player> list);
     void generateGrid(int nbPlayers);
     void reorder();
 

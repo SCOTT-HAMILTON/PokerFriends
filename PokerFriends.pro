@@ -35,6 +35,7 @@ SOURCES += \
         peermanager.cpp \
         playerwidget.cpp \
         server.cpp \
+        size.cpp \
         widget.cpp
 
 HEADERS += \
@@ -47,6 +48,7 @@ HEADERS += \
         player.h \
         playerwidget.h \
         server.h \
+        size.h \
         widget.h
 
 FORMS += \

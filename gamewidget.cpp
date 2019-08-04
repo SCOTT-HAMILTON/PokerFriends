@@ -1,15 +1,19 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
+#include "size.h"
 
 #include <QDebug>
+#include <algorithm>
 
 GameWidget::GameWidget(int nbPlayers, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
-    //eui
 
+#ifdef Q_OS_ANDROID
+    setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
+#endif
     generateGrid(nbPlayers);
 }
 
@@ -67,37 +71,40 @@ GridPos GameWidget::indexToPos(int index)
     return GridPos{l, c};
 }
 
-void GameWidget::fetchPlayers(const QList<Player> &list)
+void GameWidget::fetchPlayers(const QList<Player> list)
 {
     if (list.size()<=7){
         generateGrid(list.size());
-        // One to uncount us;
         for (int i = 1; i < players.size(); i++){
             PlayerWidget *player = static_cast<PlayerWidget*>(players[i]);
-            player->setName(list[i].nickname);
+            player->setName(list[static_cast<int>(i-1)].nickname);
         }
     }else{
-        qDebug() << "Error, too much players to fetch : " << list.size();
+        qDebug() << "Error, too much or no players to fetch : " << list.size();
     }
 }
 
 void GameWidget::generateGrid(int nbPlayers)
 {
+    if (players.size() > 0){
+        for (QWidget *widget : players){
+            if (!widget)continue;
+            ui->gridLayout->removeWidget(widget);
+            widget->deleteLater();
+        }
+    }
+    players.clear();
+
     if (nbPlayers>7){
         qDebug() << "Error, too much players given at generate grid, GameWidget : " << nbPlayers;
         return;
     }
-    for (QObject *obj : ui->gridLayout->children()){
-        QWidget *widget = static_cast<QWidget*>(obj);
-        ui->gridLayout->removeWidget(widget);
-        widget->deleteLater();
-    }
-    players.clear();
+
     for (int i = 0; i < nbPlayers+1; i++){
         PlayerWidget *playerwidget = new PlayerWidget(this);
         playerwidget->setObjectName("Player "+QString::number(i+1));
         playerwidget->setName("Player "+QString::number(i+1));
-        players.append(playerwidget);
+        players.push_back(playerwidget);
         int l = 0, c = 0;
 
         auto pos = indexToPos(i);
@@ -162,10 +169,12 @@ void GameWidget::reorder()
             if (!item){
                 continue;
             }
-            if (!item->widget()){
+            QWidget *widget = item->widget();
+            if (!widget){
                 qDebug() << "Item but no widget at position " << l << ", " << c;
+                continue;
             }
-            players.append(item->widget());
+            players.push_back(widget);
         }
     }
     for (int i = 0; i < players.size(); i++){

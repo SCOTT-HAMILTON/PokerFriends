@@ -29,6 +29,12 @@
    </item>
    <item>
     <widget class="QLabel" name="nicknameRefusedLabel">
+     <property name="font">
+      <font>
+       <family>Nimbus Sans</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true">color: red;</string>
      </property>
@@ -48,7 +54,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>329</height>
+       <height>200</height>
       </size>
      </property>
     </spacer>
@@ -59,15 +65,21 @@
       <widget class="QLabel" name="label">
        <property name="minimumSize">
         <size>
-         <width>100</width>
-         <height>25</height>
+         <width>200</width>
+         <height>50</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>200</width>
-         <height>16777215</height>
+         <height>25</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Nimbus Sans</family>
+         <pointsize>20</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Your nickname : </string>
@@ -86,7 +98,7 @@
        <property name="minimumSize">
         <size>
          <width>100</width>
-         <height>0</height>
+         <height>50</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -95,9 +107,30 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <family>Source Code Variable</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>200</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -105,15 +138,21 @@
       <widget class="QPushButton" name="joinServerButton">
        <property name="minimumSize">
         <size>
-         <width>100</width>
-         <height>0</height>
+         <width>300</width>
+         <height>60</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>200</width>
+         <width>300</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Nimbus Sans</family>
+         <pointsize>16</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Rejoindre le serveur local</string>
@@ -130,7 +169,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>268</height>
+       <height>400</height>
       </size>
      </property>
     </spacer>
