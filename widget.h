@@ -17,6 +17,15 @@ struct Answer{
     bool answered = false;
 };
 
+struct ConnectionSettings{
+    QString nickname;
+    size_t numberOfPlayers;
+    Answer AnswersForNumberOfPlayers;
+    Answer AnswersForNicknameIsFine;
+    bool accepted;
+    QTimer errorPauseTimer;
+};
+
 class Widget : public QWidget
 {
     Q_OBJECT
@@ -42,24 +51,19 @@ public slots:
     void checkPlayersNumberAndTryValidateNickname();
     void timeOutCheckPlayersNumberAndTryValidateNickname();
 
-    void finishParticipantCount();
     void resetAndEnableInitialMenu();
+
+    void readyToStartTheGame();
 
 
 private:
     Client client;
-    QString nickname;
+
     GameWidget *gamewidget;
     InitialMenu *initialmenu;
     GamePlay gameplay;
-    bool accepted;
-    size_t numberOfPlayers;
-    Answer AnswersForNumberOfPlayers;
-    Answer AnswersForNicknameIsFine;
-    size_t nbParticipant;
-    bool participantinit;
-    QTimer participantInitTimer;
-    QTimer pauseTimer;
+
+    ConnectionSettings connectionSettings;
 };
 
 #endif // WIDGET_H

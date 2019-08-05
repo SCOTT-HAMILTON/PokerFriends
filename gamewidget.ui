@@ -73,11 +73,14 @@
     </layout>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetMaximumSize</enum>
+    <layout class="QGridLayout" name="gridLayout"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="startTheGameButton">
+     <property name="text">
+      <string>Ready to start the game !!!</string>
      </property>
-    </layout>
+    </widget>
    </item>
   </layout>
  </widget>

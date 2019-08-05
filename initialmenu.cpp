@@ -68,10 +68,7 @@ InitialMenu::InitialMenu(QWidget *parent) : QWidget(parent),
                                              static_cast<int>(400.0*Size::SIZE_FACTOR),
                                              QSizePolicy::Minimum, QSizePolicy::Expanding);
         }
-
-#ifdef Q_OS_ANDROID
     setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
-#endif
 }
 
 InitialMenu::~InitialMenu()

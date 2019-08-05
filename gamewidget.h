@@ -27,10 +27,14 @@ public:
     ~GameWidget();
     GridPos indexToPos(int index);
 
+signals:
+    void readyToStartTheGame();
+
 public slots:
     void fetchPlayers(const QList<Player> list);
     void generateGrid(int nbPlayers);
     void reorder();
+    void on_startTheGameButton_clicked();
 
 private:
     Ui::GameWidget *ui;

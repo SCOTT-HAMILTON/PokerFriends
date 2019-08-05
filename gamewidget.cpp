@@ -11,9 +11,7 @@ GameWidget::GameWidget(int nbPlayers, QWidget *parent) :
 {
     ui->setupUi(this);
 
-#ifdef Q_OS_ANDROID
     setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
-#endif
     generateGrid(nbPlayers);
 }
 
@@ -180,4 +178,9 @@ void GameWidget::reorder()
     for (int i = 0; i < players.size(); i++){
         static_cast<PlayerWidget*>(players[i])->setName("Player "+QString::number(i+1));
     }
+}
+
+void GameWidget::on_startTheGameButton_clicked()
+{
+    emit readyToStartTheGame();
 }

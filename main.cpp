@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     #else
             h -= 80;
             Size::APP_SIZEH = h;
-            Size::APP_SIZEW = h*960/1310;
+            Size::APP_SIZEW = h*720/1310;
             Size::SIZE_FACTOR = static_cast<double>(Size::APP_SIZEH)/655.0;
 
     #endif

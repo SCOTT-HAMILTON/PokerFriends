@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <QDebug>
 
-GamePlay::GamePlay(QObject *parent) : QObject(parent)
+GamePlay::GamePlay(QObject *parent) : QObject(parent), gameStarted(false)
 {
 
 }
@@ -49,6 +49,16 @@ const QList<Player>::const_iterator GamePlay::findPlayerWithPeerNick(const QStri
 const QList<Player>::const_iterator GamePlay::findPlayerWithNickname(const QString &nickname) const
 {
     return std::find_if(players.begin(), players.end(), [&nickname](const Player &p){ return p.nickname == nickname;});
+}
+
+bool GamePlay::isTheGameStarted() const
+{
+    return gameStarted;
+}
+
+void GamePlay::startTheGame()
+{
+    gameStarted = true;
 }
 
 QString GamePlay::playersReport() const
