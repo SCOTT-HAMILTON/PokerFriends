@@ -32,7 +32,9 @@ SOURCES += \
         gamewidget.cpp \
         initialmenu.cpp \
         main.cpp \
+        networkprotocol.cpp \
         peermanager.cpp \
+        playersressource.cpp \
         playerwidget.cpp \
         server.cpp \
         size.cpp \
@@ -44,8 +46,10 @@ HEADERS += \
         gameplay.h \
         gamewidget.h \
         initialmenu.h \
+        networkprotocol.h \
         peermanager.h \
         player.h \
+        playersressource.h \
         playerwidget.h \
         server.h \
         size.h \

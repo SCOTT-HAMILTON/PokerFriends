@@ -10,21 +10,8 @@
 #include "initialmenu.h"
 #include "gamewidget.h"
 #include "gameplay.h"
-
-struct Answer{
-    QList<QVariant> answers;
-    QTimer timeOfFirstAnswer;
-    bool answered = false;
-};
-
-struct ConnectionSettings{
-    QString nickname;
-    size_t numberOfPlayers;
-    Answer AnswersForNumberOfPlayers;
-    Answer AnswersForNicknameIsFine;
-    bool accepted;
-    QTimer errorPauseTimer;
-};
+#include "playersressource.h"
+#include "networkprotocol.h"
 
 class Widget : public QWidget
 {
@@ -34,36 +21,28 @@ public:
     explicit Widget(QWidget *parent = nullptr);
     ~Widget();
 
-    QString &cleanMessagePonctuation(QString &msg);
-    QString &cleanMessagePonctuation(QString &&msg);
-
 signals:
-    void numberOfPlayersAnswered(size_t answer);
+    void newNetworkMessage(const QString &, const QString&);
 
 public slots:
-    void implNewMessage(const QString& peerNick, const QString& msg);
-    void implNewParticipant(const QString &peerNick);
-    void implParticipantLeft(const QString &peerNick);
     void switchToGameParty(QString);
-    void updatePlayersNumberFromAnswers();
-    void TryValidateNicknameFromPlayersAnswers();
-    void promptNicknameAndtRetryValidation();
-    void checkPlayersNumberAndTryValidateNickname();
-    void timeOutCheckPlayersNumberAndTryValidateNickname();
-
-    void resetAndEnableInitialMenu();
-
+    void repromptNickname();
+    void resetNetworkAndEnableInitialMenu();
     void readyToStartTheGame();
+
+    void fetchPlayersToGUI();
 
 
 private:
-    Client client;
-
     GameWidget *gamewidget;
     InitialMenu *initialmenu;
     GamePlay gameplay;
 
-    ConnectionSettings connectionSettings;
+    NetworkProtocol *networkProtocol;
+    PlayersRessource *playersRessource;
+
+    QTimer errorPauseTimer;
+
 };
 
 #endif // WIDGET_H
