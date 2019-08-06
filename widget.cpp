@@ -42,7 +42,7 @@ Widget::Widget(QApplication *app, QWidget *parent) :
 
 
     connect(networkProtocol, &NetworkProtocol::connectionRefusedBecauseOfNickname, this, &Widget::repromptNickname);
-//    connect(&errorPauseTimer, &QTimer::timeout, this, &Widget::resetNetworkAndEnableInitialMenu);
+    connect(&errorPauseTimer, &QTimer::timeout, this, &Widget::resetNetworkAndEnableInitialMenu);
 
     view->show();
 
@@ -57,11 +57,9 @@ void Widget::switchToGameParty()
     QString nick("Scott");
     QObject *nicknameInput = view->rootObject()->findChild<QObject*>("nicknameInput");
     if (nicknameInput){
-        qDebug() << "not NULL nicknameInput";
         nick = nicknameInput->property("text").toString();
-        qDebug() << "Nick is : " << nicknameInput->property("text").toString();
     }
-    else qDebug() << "null nicknameInput as expected";
+    else qDebug() << "Error, nicknameInput is nullptr";
 
 
     networkProtocol->enable();
@@ -78,10 +76,14 @@ void Widget::switchToGameParty()
 void Widget::repromptNickname()
 {
     qDebug() << "\n\n\nRETRY\n\n\n";
-//    initialmenu->showNicknameRefusedLabel();
-//    initialmenu->show();
+    QObject *nicknameRefusedLabel = view->rootObject()->findChild<QObject*>("nicknameRefusedLabel");
+    if (nicknameRefusedLabel){
+       nicknameRefusedLabel->setProperty("visible", true);
+    }
+    else qDebug() << "Erro, nicknameRefusedLabel is nicknameRefusedLabel";
+    view->show();
     gamewidget->hide();
-//    initialmenu->setEnabled(false);
+    view->rootObject()->setEnabled(false);
     errorPauseTimer.setInterval(2000);
     errorPauseTimer.setSingleShot(true);
     errorPauseTimer.start();
@@ -89,7 +91,7 @@ void Widget::repromptNickname()
 
 void Widget::resetNetworkAndEnableInitialMenu()
 {
-//    initialmenu->setEnabled(true);
+    view->rootObject()->setEnabled(true);
     networkProtocol->reset();
 }
 

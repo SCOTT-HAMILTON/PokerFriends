@@ -27,6 +27,8 @@ Rectangle {
         spacing: 0
 
         Label {
+            id: nicknameRefusedLabel
+            objectName: "nicknameRefusedLabel"
             text: "This nickname is already used, choose another please."
             width: APP_SIZEW
             color: "#FF0000"
