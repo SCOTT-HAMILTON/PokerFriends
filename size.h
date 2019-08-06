@@ -1,4 +1,5 @@
 #pragma once
+#include <QObject>
 
 #ifdef ANDROID_SIZE
     #define TITLE_FONT_SIZE 20
@@ -19,12 +20,17 @@
     #define THIRDPLAYER_COLUMN
 #endif
 
-class Size {
+class Size : public QObject {
+Q_OBJECT
 public:
+    virtual ~Size(){}
 
-static int APP_SIZEW;
-static int APP_SIZEH;
-static double SIZE_FACTOR;
-static int APP_X;
-static int APP_Y;
+public slots:
+    static void updateSize();
+public:
+    static int APP_SIZEW;
+    static int APP_SIZEH;
+    static double SIZE_FACTOR;
+    static int APP_X;
+    static int APP_Y;
 };

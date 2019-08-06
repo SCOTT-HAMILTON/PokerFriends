@@ -5,6 +5,7 @@
 #include <QList>
 #include <QVariant>
 #include <QTimer>
+#include <QQuickView>
 
 #include "client.h"
 #include "initialmenu.h"
@@ -12,20 +13,21 @@
 #include "gameplay.h"
 #include "playersressource.h"
 #include "networkprotocol.h"
+#include <QtQuickWidgets/QQuickWidget>
 
 class Widget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Widget(QWidget *parent = nullptr);
+    explicit Widget(QApplication *app, QWidget *parent = nullptr);
     ~Widget();
 
 signals:
     void newNetworkMessage(const QString &, const QString&);
 
 public slots:
-    void switchToGameParty(QString);
+    void switchToGameParty();
     void repromptNickname();
     void resetNetworkAndEnableInitialMenu();
     void readyToStartTheGame();
@@ -35,14 +37,13 @@ public slots:
 
 private:
     GameWidget *gamewidget;
-    InitialMenu *initialmenu;
     GamePlay gameplay;
 
     NetworkProtocol *networkProtocol;
     PlayersRessource *playersRessource;
 
     QTimer errorPauseTimer;
-
+    QQuickWidget *view;
 };
 
 #endif // WIDGET_H

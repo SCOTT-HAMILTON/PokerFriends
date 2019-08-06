@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core network gui
+QT       += core network gui quick quickwidgets
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 requires(qtConfig(udpsocket))
 requires(qtConfig(listwidget))
@@ -76,9 +76,14 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew \
     android/gradlew.bat \
-    android/res/values/libs.xml
+    android/res/values/libs.xml \
+    main.qml
 
 contains(ANDROID_TARGET_ARCH,arm64-v8a) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
+
+RESOURCES += \
+    qml.qrc \
+    qml.qrc
