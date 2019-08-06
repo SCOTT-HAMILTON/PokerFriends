@@ -6,8 +6,9 @@
 NetworkProtocol::NetworkProtocol(PlayersRessource *playersRessource, QObject *parent) : QObject(parent),
     playersRessource(playersRessource), enabled(false)
 {
-    //SHOULD BE ENABLE WHEN GAME WIDGET IS READY AND SHOWED
-    connectionSettings.accepted = false;
+    connectionSettings.accepted    = false;
+    connectionSettings.ready       = false;
+    connectionSettings.gameStarted = false;
 
     //CLIENT
     connect(&client, &Client::newMessage,
@@ -43,6 +44,9 @@ void NetworkProtocol::analyzeNewMessage(const QString &peerNick, const QString &
      * This nick already exists
      * How many players are you?
      * The number of players is
+     * Ready <nickname>
+     * Start the game with <nickname>
+     * Not all ready
     */
     QString msg = message;
     msg = cleanMessagePonctuation(msg);
@@ -55,18 +59,18 @@ void NetworkProtocol::analyzeNewMessage(const QString &peerNick, const QString &
     if (!connectionSettings.AnswersForNicknameIsFine.answered){
         qDebug() << "number of answers for nickname is fine before : " << connectionSettings.AnswersForNicknameIsFine.answers.size();
     }
-    //MESSAGE recognition
+
+    /* **MESSAGE RECOGNITION** */
     if (msg.startsWith("Hello, I'm ")){
         qDebug() << "A new player entered in the party!! Let's welcome him";
         QString playerNickname = msg.mid(11, -1);
         qDebug() << "nickname is " << playerNickname;
         playersRessource->addPlayer(playerNickname, peerNick);
-        /* TODO TO TEST CONNECTION WITH WIDGET*/
         emit newPlayerAdded(playerNickname, peerNick);
 
-        client.sendMessage("Welcome "+playerNickname+", I'm "+connectionSettings.nickname);//W
+        client.sendMessage("Welcome "+playerNickname+", I'm "+connectionSettings.nickname);
     }
-    else if (msg.startsWith("Welcome ")){//W
+    else if (msg.startsWith("Welcome ")){
         int pos = msg.indexOf(',');
         if (pos < 9){
             qDebug() << "Erreur, name is too short or inexistant...or invalid message was given.";
@@ -78,7 +82,7 @@ void NetworkProtocol::analyzeNewMessage(const QString &peerNick, const QString &
         qDebug() << "welcoming player is " << welcomingPlayer;
 
         if (welcomedPlayer == connectionSettings.nickname){
-            if (!playersRessource->playerExist(peerNick)){
+            if (!playersRessource->playerExistWithPeerNick(peerNick)){
                 playersRessource->addPlayer(welcomingPlayer, peerNick);
                 emit newPlayerAdded(welcomingPlayer, peerNick);
             }
@@ -93,19 +97,19 @@ void NetworkProtocol::analyzeNewMessage(const QString &peerNick, const QString &
         QString playerNickname = msg.mid(13, -1);
         if (playersRessource->nicknameExists(peerNick) || playerNickname == connectionSettings.nickname){
             qDebug() << "Yes, sending that the nickname " << playerNickname << "exists.";
-            client.sendMessage("This nick already exists "+playerNickname);//
+            client.sendMessage("This nick already exists "+playerNickname);
         }else{
             qDebug() << "No, sending that the nickname " << playerNickname << " doesn't exist.";
-            client.sendMessage("This nick is fine "+playerNickname);//
+            client.sendMessage("This nick is fine "+playerNickname);
         }
-    }else if(msg.startsWith("How many players are you")){//
+    }else if(msg.startsWith("How many players are you")){
         if (connectionSettings.accepted){
             qDebug() << "Sending the number of players which is " << playersRessource->playersCount()+1;
             client.sendMessage("The number of players is "+QString::number(playersRessource->playersCount()+1));//
         }else{
             qDebug() << "Not yet connectionSettings.accepted can't answer to the question How many players are you.";
         }
-    }else if(msg.startsWith("The number of players is ")){//
+    }else if(msg.startsWith("The number of players is ")){
         QString number = msg.mid(25, -1);
         bool ok=false;
         int num = 0;
@@ -125,22 +129,9 @@ void NetworkProtocol::analyzeNewMessage(const QString &peerNick, const QString &
                 }
                 qDebug() << "adding answer " << num << " from " << peerNick << " to players Number answers";
                 connectionSettings.AnswersForNumberOfPlayers.answers.append(num);
-                /*
-                 * TODO :
-                 * Answers system
-                 * > answers validation
-                 * tests
-                 * accept validation
-                 * > good number of players
-                 * > nickname duplicatio avoidance
-                 * Tests
-                 *
-                 * players UI update from fetched players
-                 *
-               */
             }
         }
-    }else if (msg.startsWith("This nick is fine ")){//
+    }else if (msg.startsWith("This nick is fine ")){
         QString playerNickname = msg.mid(18, -1);
         qDebug() << "Player nickname " << playerNickname << " seems to be fine.";
         if (!connectionSettings.accepted){
@@ -155,7 +146,7 @@ void NetworkProtocol::analyzeNewMessage(const QString &peerNick, const QString &
             qDebug() << "Already connectionSettings.accepted, we don't care of nickname validation.";
         }
 
-    }else if (msg.startsWith("This nick already exists ")){//
+    }else if (msg.startsWith("This nick already exists ")){
         QString playerNickname = msg.mid(25, -1);
         qDebug() << "Player nickname " << playerNickname << " seems to already be used.";
         if (!connectionSettings.accepted){
@@ -169,11 +160,37 @@ void NetworkProtocol::analyzeNewMessage(const QString &peerNick, const QString &
         }else{
             qDebug() << "Already connectionSettings.accepted, we don't care of nickname validation.";
         }
+    }else if (msg.startsWith("Ready ")){
+        QString playerNickname = msg.mid(6, -1);
+        qDebug() << "Player nickname " << playerNickname << " seems to be ready.";
+        if (connectionSettings.accepted){
+            playersRessource->setPlayerReady(peerNick);
+            if (connectionSettings.ready && playersRessource->allPlayersAreReady()){
+                emit allPlayersAreReady();
+            }
+        }
+    }else if (msg.startsWith("Start the game with ")){
+        QString playerNickname = msg.mid(20, -1);
+        qDebug() << "Player nickname " << playerNickname << " started the party.";
+        if (connectionSettings.accepted){
+            if (!playersRessource->allPlayersAreReady()){
+                client.sendMessage("Not all ready");
+            }else{
+                connectionSettings.gameStarted = true;
+                emit startTheGame(playerNickname);
+            }
+        }
+
+    }else if (msg.startsWith("Not all ready")){
+        if (connectionSettings.accepted){
+            connectionSettings.gameStarted = false;
+            emit stopTheGameBecauseOfNotAllReady();
+        }
+    }else{
+        qDebug() << "MESSAGE was not recognized : " << msg;
     }
-    if (!connectionSettings.AnswersForNicknameIsFine.answered){
-        qDebug() << "number of answers for nickname is fine after : " << connectionSettings.AnswersForNicknameIsFine.answers.size();
-    }
-    qDebug() << playersRessource->playersReport();
+
+    qDebug() << "PLAYERS REPORT : \n" << playersRessource->playersReport();
 }
 
 void NetworkProtocol::enable()
@@ -213,7 +230,7 @@ void NetworkProtocol::tryValidateNicknameFromPlayersAnswers()
     connectionSettings.AnswersForNicknameIsFine.answers.clear();
     if (PlayersAnswers.size() == 0){
         connectionSettings.AnswersForNicknameIsFine.answered = true;
-        qDebug() << "\n\nZERO LOL answers for nickname is fine, accepting ourself\n\n";
+        qDebug() << "\n\nZERO answers when asking if our nickname is fine, accepting ourself\n\n";
         client.sendMessage("Hello, I'm "+connectionSettings.nickname);
         connectionSettings.accepted = true;
         return;
@@ -257,22 +274,16 @@ void NetworkProtocol::tryValidateNicknameFromPlayersAnswers()
 
 void NetworkProtocol::checkPlayersNumberAndTryValidateNickname()
 {
-    qDebug() << "CHECK and try validate nickname";
     if (connectionSettings.AnswersForNicknameIsFine.answered){
-        qDebug() << "FUCK FUCK FUCK No need to check, already answered";
+        qDebug() << "No need to validate, already answered";
         return;
     }
     if (connectionSettings.AnswersForNumberOfPlayers.answered &&
             connectionSettings.AnswersForNicknameIsFine.answers.size() >= static_cast<int>(connectionSettings.numberOfPlayers)){
-        qDebug() << "CHECK and try validate nickname, "
-                    "As the number of given answers for nickname is fine is greater than or equal as the number of players";
-        qDebug() << "CHECK and try validate nickname"
-                    "we will try to validate the answers given.";
         if (connectionSettings.AnswersForNicknameIsFine.answers.size() > static_cast<int>(connectionSettings.numberOfPlayers)){
-            qDebug() << "strange, number of answers bigger than the number of players.. never mind : ";
-            qDebug() << "is the Number of players answered? : " << connectionSettings.AnswersForNumberOfPlayers.answered;
-            qDebug() << "Number of answers for nickname is valid : " << connectionSettings.AnswersForNicknameIsFine.answers.size();
-            qDebug() << "Number of players (if answered) : " << connectionSettings.numberOfPlayers;
+            qDebug() << "STRANGE Number of answers bigger than the number of players : "
+                     << connectionSettings.AnswersForNicknameIsFine.answers.size() << " > "
+                     << static_cast<int>(connectionSettings.numberOfPlayers);
         }
         tryValidateNicknameFromPlayersAnswers();
     }else{
@@ -286,13 +297,30 @@ void NetworkProtocol::checkPlayersNumberAndTryValidateNickname()
 void NetworkProtocol::removeParticipant(const QString &peerNick)
 {
     qDebug() << "A PARTICIPANT LEFT : " << peerNick;
-    if (playersRessource->playerExist(peerNick)){
+    if (playersRessource->playerExistWithPeerNick(peerNick)){
         playersRessource->removePlayer(peerNick);
         emit participantLeft(peerNick);
         qDebug() << playersRessource->playersReport() << '\n';
     }else{
         qDebug() << "unknow player, can't remove it (!";
     }
+}
+
+void NetworkProtocol::sendReadyToStartTheGame()
+{
+    client.sendMessage("Ready "+connectionSettings.nickname);
+    connectionSettings.ready = true;
+    if (playersRessource->allPlayersAreReady()){
+        emit allPlayersAreReady();
+    }else{
+        emit waitingForPlayersToBeReady();
+    }
+}
+
+void NetworkProtocol::sendStartTheGame()
+{
+    client.sendMessage("Start the game with "+connectionSettings.nickname);
+    connectionSettings.gameStarted = true;
 }
 
 void NetworkProtocol::updatePlayersNumberFromAnswers()

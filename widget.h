@@ -20,7 +20,7 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
-    explicit Widget(QApplication *app, QWidget *parent = nullptr);
+    explicit Widget(QWidget *parent = nullptr);
     ~Widget();
 
 signals:
@@ -34,16 +34,21 @@ public slots:
 
     void fetchPlayersToGUI();
 
+    void sendGameStarted();
+    void implStartTheGame(QString);
+    void implStopTheGameBecauseOfNotAllReady();
+
+    void showStartTheGameButton();
 
 private:
-    GameWidget *gamewidget;
-    GamePlay gameplay;
+    GameWidget* gamewidget;
+    GamePlay* gameplay;
 
     NetworkProtocol *networkProtocol;
     PlayersRessource *playersRessource;
 
     QTimer errorPauseTimer;
-    QQuickWidget *view;
+    QQuickWidget* view;
 };
 
 #endif // WIDGET_H

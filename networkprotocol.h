@@ -18,6 +18,8 @@ struct ConnectionSettings{
     Answer AnswersForNumberOfPlayers;
     Answer AnswersForNicknameIsFine;
     bool accepted;
+    bool ready;
+    bool gameStarted;
 };
 
 class NetworkProtocol : public QObject
@@ -31,8 +33,11 @@ signals:
     void maybeNewPlayer(const QString&, const QString&);
     void participantLeft(const QString &peerNick);
     void connectionRefusedBecauseOfNickname();
-
     void numberOfPlayersAnswered(size_t answer);
+    void startTheGame(QString);
+    void stopTheGameBecauseOfNotAllReady();
+    void allPlayersAreReady();
+    void waitingForPlayersToBeReady();
 
 public slots:
     void analyzeNewMessage(const QString& peerNick, const QString& message);
@@ -44,6 +49,9 @@ public slots:
     void checkPlayersNumberAndTryValidateNickname();
 
     void removeParticipant(const QString &peerNick);
+
+    void sendReadyToStartTheGame();
+    void sendStartTheGame();
 
     //ANSWERS
     void updatePlayersNumberFromAnswers();

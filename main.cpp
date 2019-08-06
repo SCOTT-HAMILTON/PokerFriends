@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
 
 
-    Widget widget(&app);
+    Widget widget;
     widget.show();
     return app.exec();
 }

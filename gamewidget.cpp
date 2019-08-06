@@ -7,6 +7,7 @@
 
 GameWidget::GameWidget(int nbPlayers, QWidget *parent) :
     QWidget(parent),
+    startButtonMode(StartButtonMode::READY),
     ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
@@ -182,5 +183,61 @@ void GameWidget::reorder()
 
 void GameWidget::on_startTheGameButton_clicked()
 {
-    emit readyToStartTheGame();
+    if (startButtonMode == StartButtonMode::READY){
+        startButtonMode = StartButtonMode::READY_WAITING;
+        emit readyToStartTheGame();
+    }else if (startButtonMode == StartButtonMode::START){
+        qDebug() << "game started emitted!!!";
+        emit gameStarted();
+    }else{
+        qDebug() << "NOPE, : ";
+        switch (startButtonMode){
+        case StartButtonMode::READY: {
+            qDebug("READY");
+            break;
+        }case StartButtonMode::READY_WAITING: {
+            qDebug("READY_WAITING");
+            break;
+        }case StartButtonMode::START: {
+            qDebug("START");
+            break;
+        }
+
+        }
+    }
+}
+
+void GameWidget::showStartTheGameButton()
+{
+    ui->startTheGameButton->show();
+    ui->startTheGameButton->setEnabled(true);
+    ui->startTheGameButton->setText(tr("Start the game!!!"));
+    startButtonMode = StartButtonMode::START;
+    qDebug() << "START THE GAME!!!";
+    switch (startButtonMode){
+    case StartButtonMode::READY: {
+        qDebug("READY");
+        break;
+    }case StartButtonMode::READY_WAITING: {
+        qDebug("READY_WAITING");
+        break;
+    }case StartButtonMode::START: {
+        qDebug("START");
+        break;
+    }
+
+    }
+}
+
+void GameWidget::hideStartTheGameButton()
+{
+    ui->startTheGameButton->hide();
+}
+
+void GameWidget::showWaitingForPlayersToBeReady()
+{
+    qDebug() << "WAITING...";
+    startButtonMode = StartButtonMode::READY_WAITING;
+    ui->startTheGameButton->setText(tr("Waiting for players to be ready..."));
+    ui->startTheGameButton->setEnabled(false);
 }

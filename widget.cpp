@@ -12,7 +12,7 @@
 #include <QQuickItem>
 #include <QApplication>
 
-Widget::Widget(QApplication *app, QWidget *parent) :
+Widget::Widget(QWidget *parent) :
     QWidget(parent), gamewidget(nullptr)
 {
     setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
@@ -30,8 +30,8 @@ Widget::Widget(QApplication *app, QWidget *parent) :
     view->setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
 
     playersRessource = new PlayersRessource(this);
-    networkProtocol = new NetworkProtocol(playersRessource);
-
+    networkProtocol  = new NetworkProtocol(playersRessource);
+    gameplay         = new GamePlay(playersRessource);
     QObject *window = view->rootObject();
 
 
@@ -43,6 +43,15 @@ Widget::Widget(QApplication *app, QWidget *parent) :
 
     connect(networkProtocol, &NetworkProtocol::connectionRefusedBecauseOfNickname, this, &Widget::repromptNickname);
     connect(&errorPauseTimer, &QTimer::timeout, this, &Widget::resetNetworkAndEnableInitialMenu);
+
+    connect(networkProtocol, &NetworkProtocol::startTheGame,
+            this, &Widget::implStartTheGame);
+    connect(networkProtocol, &NetworkProtocol::stopTheGameBecauseOfNotAllReady,
+            this, &Widget::implStopTheGameBecauseOfNotAllReady);
+    connect(networkProtocol, &NetworkProtocol::startTheGame, this, &Widget::implStartTheGame);
+
+    connect(networkProtocol, &NetworkProtocol::allPlayersAreReady,
+            this, &Widget::showStartTheGameButton);
 
     view->show();
 
@@ -68,6 +77,9 @@ void Widget::switchToGameParty()
     if (!gamewidget){
         gamewidget = new GameWidget(7, this);
         connect(gamewidget, &GameWidget::readyToStartTheGame, this, &Widget::readyToStartTheGame);
+        connect(networkProtocol, &NetworkProtocol::waitingForPlayersToBeReady,
+                gamewidget, &GameWidget::showWaitingForPlayersToBeReady);
+        connect(gamewidget, &GameWidget::gameStarted, this, &Widget::sendGameStarted);
     }
     gamewidget->fetchPlayers(playersRessource->getPlayers());
     gamewidget->show();
@@ -98,11 +110,37 @@ void Widget::resetNetworkAndEnableInitialMenu()
 void Widget::readyToStartTheGame()
 {
     qDebug() << "Ready to start the game!!!";
+    networkProtocol->sendReadyToStartTheGame();
 }
 
 void Widget::fetchPlayersToGUI()
 {
     gamewidget->fetchPlayers(playersRessource->getPlayers());
+}
+
+void Widget::sendGameStarted()
+{
+    implStartTheGame("me");
+    networkProtocol->sendStartTheGame();
+}
+
+void Widget::implStartTheGame(QString nickname)
+{
+    qDebug() << "The GAME STARTED!!!";
+    gamewidget->hideStartTheGameButton();
+    gameplay->startTheGame(nickname);
+}
+
+void Widget::implStopTheGameBecauseOfNotAllReady()
+{
+    qDebug() << "The GAME STOPPED because not all players were ready...";
+}
+
+void Widget::showStartTheGameButton()
+{
+
+    qDebug() << "Showing start the game button!!";
+    gamewidget->showStartTheGameButton();
 }
 
 

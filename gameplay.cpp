@@ -3,9 +3,10 @@
 #include <algorithm>
 #include <QDebug>
 
-GamePlay::GamePlay(QObject *parent) : QObject(parent), gameStarted(false)
+GamePlay::GamePlay(PlayersRessource* playersRessource, QObject *parent) :
+    QObject(parent),
+    playersRessource(playersRessource), gameStarted(false)
 {
-
 }
 
 bool GamePlay::isTheGameStarted() const
@@ -13,8 +14,19 @@ bool GamePlay::isTheGameStarted() const
     return gameStarted;
 }
 
-void GamePlay::startTheGame()
+void GamePlay::startTheGame(QString nickname)
 {
+    setWhoseTourIsIt(nickname);
     gameStarted = true;
+}
+
+void GamePlay::setWhoseTourIsIt(QString nickname)
+{
+    /*TODO test if player tour is set*/
+    if (playersRessource->playerExistWithNickname(nickname) || nickname == "me"){
+        tourPlayerNickname = nickname;
+    }else{
+        qDebug() << "Error, GamePlay -> setWhoseTourIsIt : Player nickname doesn't exist " << nickname;
+    }
 }
 

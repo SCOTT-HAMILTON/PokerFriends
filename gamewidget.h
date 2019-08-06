@@ -29,14 +29,22 @@ public:
 
 signals:
     void readyToStartTheGame();
+    void gameStarted();
 
 public slots:
     void fetchPlayers(const QList<Player> list);
     void generateGrid(int nbPlayers);
     void reorder();
     void on_startTheGameButton_clicked();
+    void showStartTheGameButton();
+    void hideStartTheGameButton();
+    void showWaitingForPlayersToBeReady();
 
 private:
+    enum class StartButtonMode{
+        READY, READY_WAITING, START
+    };
+    StartButtonMode startButtonMode;
     Ui::GameWidget *ui;
     QString nickname;
     QList<QWidget*> players;
