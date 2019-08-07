@@ -20,17 +20,17 @@ Why would you need any cards and poker chips to player Poker with your friends ?
 
 The login page
 <p align="center">
-  <img src="./screens/screen.jpg" alt="Size Limit CLI" width="738">
+  <img src="./screens/screen.jpg" alt="screen1">
 </p>
 
 <p align="center">
-  <img src="./screens/screen2.jpg" alt="Size Limit CLI" width="738">
+  <img src="./screens/screen2.jpg" alt="screen2">
 </p>
 
 And the game "lobby"
 
 <p align="center">
-  <img src="./screens/screen3.jpg" alt="Size Limit CLI" width="738">
+  <img src="./screens/screen3.jpg" alt="screen3">
 </p>
 
 
