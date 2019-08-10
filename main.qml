@@ -32,6 +32,7 @@ Rectangle {
             text: "This nickname is already used, choose another please."
             width: APP_SIZEW
             color: "#FF0000"
+            font.pixelSize: 13*SIZE_FACTOR
             Layout.margins: 0
             Layout.fillWidth: true
             Layout.topMargin: 20*SIZE_FACTOR
@@ -107,9 +108,6 @@ Rectangle {
             onClicked: {
                 window.joinLocalServer()
             }
-
-
-
         }
         Item {
             // spacer item

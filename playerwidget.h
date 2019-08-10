@@ -16,6 +16,9 @@ public:
     QString name() const;
     ~PlayerWidget();
 
+public slots:
+    void setStatusText(const QString&);
+
 private:
     Ui::PlayerWidget *ui;
 };

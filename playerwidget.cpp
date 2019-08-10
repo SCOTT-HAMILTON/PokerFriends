@@ -22,3 +22,8 @@ PlayerWidget::~PlayerWidget()
 {
     delete ui;
 }
+
+void PlayerWidget::setStatusText(const QString& text)
+{
+    ui->label_2->setText(text);
+}

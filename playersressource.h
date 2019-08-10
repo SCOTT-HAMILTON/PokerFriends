@@ -31,6 +31,7 @@ public:
 
 
 signals:
+    void playersCountChanged(QList<Player>&);
 
 public slots:
 

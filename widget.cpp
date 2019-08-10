@@ -37,10 +37,6 @@ Widget::Widget(QWidget *parent) :
 
     connect(window, SIGNAL(joinLocalServer()), this, SLOT(switchToGameParty()));
 
-    connect(networkProtocol, &NetworkProtocol::newPlayerAdded, this, &Widget::fetchPlayersToGUI);
-    connect(networkProtocol, &NetworkProtocol::participantLeft, this, &Widget::fetchPlayersToGUI);
-
-
     connect(networkProtocol, &NetworkProtocol::connectionRefusedBecauseOfNickname, this, &Widget::repromptNickname);
     connect(&errorPauseTimer, &QTimer::timeout, this, &Widget::resetNetworkAndEnableInitialMenu);
 
@@ -75,13 +71,12 @@ void Widget::switchToGameParty()
     networkProtocol->startConnection(nick);
     view->hide();
     if (!gamewidget){
-        gamewidget = new GameWidget(7, this);
+        gamewidget = new GameWidget(playersRessource, 7, this);
         connect(gamewidget, &GameWidget::readyToStartTheGame, this, &Widget::readyToStartTheGame);
         connect(networkProtocol, &NetworkProtocol::waitingForPlayersToBeReady,
                 gamewidget, &GameWidget::showWaitingForPlayersToBeReady);
         connect(gamewidget, &GameWidget::gameStarted, this, &Widget::sendGameStarted);
     }
-    gamewidget->fetchPlayers(playersRessource->getPlayers());
     gamewidget->show();
 }
 
@@ -113,11 +108,6 @@ void Widget::readyToStartTheGame()
     networkProtocol->sendReadyToStartTheGame();
 }
 
-void Widget::fetchPlayersToGUI()
-{
-    gamewidget->fetchPlayers(playersRessource->getPlayers());
-}
-
 void Widget::sendGameStarted()
 {
     implStartTheGame("me");
@@ -129,6 +119,8 @@ void Widget::implStartTheGame(QString nickname)
     qDebug() << "The GAME STARTED!!!";
     gamewidget->hideStartTheGameButton();
     gameplay->startTheGame(nickname);
+    qDebug() << "given nickname : " << nickname;
+    gamewidget->updatePlayerTour(nickname);
 }
 
 void Widget::implStopTheGameBecauseOfNotAllReady()

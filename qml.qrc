@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>PlayPanel.qml</file>
+        <file>BetPanel.qml</file>
+        <file>FoldVerificationPanel.qml</file>
+        <file>BetVerificationPanel.qml</file>
     </qresource>
 </RCC>

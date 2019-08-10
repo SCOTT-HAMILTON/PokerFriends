@@ -33,6 +33,7 @@ SOURCES += \
         initialmenu.cpp \
         main.cpp \
         networkprotocol.cpp \
+        partywidget.cpp \
         peermanager.cpp \
         playersressource.cpp \
         playerwidget.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
         gamewidget.h \
         initialmenu.h \
         networkprotocol.h \
+        partywidget.h \
         peermanager.h \
         player.h \
         playersressource.h \
@@ -70,6 +72,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    BetPanel.qml \
+    BetVerificationPanel.qml \
+    FoldVerificationPanel.qml \
+    PlayPanel.qml \
     android/AndroidManifest.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.jar \

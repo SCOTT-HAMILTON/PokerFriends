@@ -1,24 +1,45 @@
 #include "gamewidget.h"
-#include "ui_gamewidget.h"
 #include "size.h"
+#include "ui_gamewidget.h"
 
 #include <QDebug>
 #include <algorithm>
+#include <QQmlContext>
 
-GameWidget::GameWidget(int nbPlayers, QWidget *parent) :
-    QWidget(parent),
-    startButtonMode(StartButtonMode::READY),
-    ui(new Ui::GameWidget)
+GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidget *parent) :
+    QWidget(parent), playersRessource(playersRessource),
+    startButtonMode(StartButtonMode::READY)
 {
-    ui->setupUi(this);
-
     setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
+
+    partyWidget = new PartyWidget(this);
+    partyWidget->hide();
+
     generateGrid(nbPlayers);
+    fetchPlayers();
+
+    connect(playersRessource, &PlayersRessource::playersCountChanged, this, &GameWidget::fetchPlayers);
+
+    view = new QQuickWidget(this);
+    view->setWindowFlags(Qt::WindowStaysOnTopHint);
+    view->rootContext()->setContextProperty("APP_SIZEW", Size::APP_SIZEW);
+    view->rootContext()->setContextProperty("APP_SIZEH", Size::APP_SIZEH);
+    view->rootContext()->setContextProperty("SIZE_FACTOR", Size::SIZE_FACTOR);
+    const int screen_pc = 30;
+    view->rootContext()->setContextProperty("SCREEN_PERCENT", screen_pc);
+    view->move(0, Size::APP_SIZEH-(Size::APP_SIZEH*screen_pc/100));
+    view->setSource(QUrl("qrc:/PlayPanel.qml"));
+    if (view->status() == QQuickWidget::Error)
+        qDebug() << "Error, view can't load main.qml source !!!";
+    view->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    view->setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH*screen_pc/100);
+    view->show();
+
+
 }
 
 GameWidget::~GameWidget()
 {
-    delete ui;
 }
 
 GridPos GameWidget::indexToPos(int index)
@@ -70,8 +91,9 @@ GridPos GameWidget::indexToPos(int index)
     return GridPos{l, c};
 }
 
-void GameWidget::fetchPlayers(const QList<Player> list)
+void GameWidget::fetchPlayers()
 {
+    auto list = playersRessource->getPlayers();
     if (list.size()<=7){
         generateGrid(list.size());
         for (int i = 1; i < players.size(); i++){
@@ -81,6 +103,20 @@ void GameWidget::fetchPlayers(const QList<Player> list)
     }else{
         qDebug() << "Error, too much or no players to fetch : " << list.size();
     }
+    updateNames();
+}
+
+void GameWidget::updateNames()
+{
+    auto list = playersRessource->getPlayers();
+    if (list.size()+1 != players.size()){
+        qDebug() << "Error GameWidget->updateNames : playerswiget list and players list don't have the same size";
+    }
+    static_cast<PlayerWidget*>(players[0])->setName("me");
+
+    for (int i =1; i < players.size(); i++){
+        static_cast<PlayerWidget*>(players[i])->setName(list[i-1].nickname);
+    }
 }
 
 void GameWidget::generateGrid(int nbPlayers)
@@ -88,7 +124,7 @@ void GameWidget::generateGrid(int nbPlayers)
     if (players.size() > 0){
         for (QWidget *widget : players){
             if (!widget)continue;
-            ui->gridLayout->removeWidget(widget);
+            partyWidget->ui->gridLayout->removeWidget(widget);
             widget->deleteLater();
         }
     }
@@ -111,7 +147,7 @@ void GameWidget::generateGrid(int nbPlayers)
         c = pos.column;
         playerwidget->setProperty("layoutLine", l);
         playerwidget->setProperty("layoutColumn", c);
-        ui->gridLayout->addWidget(playerwidget, l, c);
+        partyWidget->ui->gridLayout->addWidget(playerwidget, l, c);
     }
     reorder();
     if (players.size()>0){
@@ -164,7 +200,7 @@ void GameWidget::reorder()
             continue;
         }
         for (*index = *index; *index < 4 && *index >=0; (*index)+=sens){
-            auto item = ui->gridLayout->itemAtPosition(l, c);
+            auto item = partyWidget->ui->gridLayout->itemAtPosition(l, c);
             if (!item){
                 continue;
             }
@@ -209,9 +245,9 @@ void GameWidget::on_startTheGameButton_clicked()
 
 void GameWidget::showStartTheGameButton()
 {
-    ui->startTheGameButton->show();
-    ui->startTheGameButton->setEnabled(true);
-    ui->startTheGameButton->setText(tr("Start the game!!!"));
+    partyWidget->ui->startTheGameButton->show();
+    partyWidget->ui->startTheGameButton->setEnabled(true);
+    partyWidget->ui->startTheGameButton->setText(tr("Start the game!!!"));
     startButtonMode = StartButtonMode::START;
     qDebug() << "START THE GAME!!!";
     switch (startButtonMode){
@@ -231,13 +267,30 @@ void GameWidget::showStartTheGameButton()
 
 void GameWidget::hideStartTheGameButton()
 {
-    ui->startTheGameButton->hide();
+    partyWidget->ui->startTheGameButton->hide();
 }
 
 void GameWidget::showWaitingForPlayersToBeReady()
 {
     qDebug() << "WAITING...";
     startButtonMode = StartButtonMode::READY_WAITING;
-    ui->startTheGameButton->setText(tr("Waiting for players to be ready..."));
-    ui->startTheGameButton->setEnabled(false);
+    partyWidget->ui->startTheGameButton->setText(tr("Waiting for players to be ready..."));
+    partyWidget->ui->startTheGameButton->setEnabled(false);
 }
+
+void GameWidget::updatePlayerTour(QString nickname)
+{
+    QList<QWidget*>::iterator player = std::find_if(players.begin(), players.end(), [&nickname](const QWidget *widget){
+        auto player = static_cast<const PlayerWidget*>(widget);
+        return player->name() == nickname;
+    });
+
+    if (player == players.end()){
+        qDebug() << "Erro GameWidget->updatePlayerTour : not found PlayerWidget with nickname " << nickname;
+        return;
+    }
+    qDebug() << "Player turn : " << static_cast<PlayerWidget>(*player).name();
+    static_cast<PlayerWidget*>(*player)->setStatusText("My turn...");
+}
+
+

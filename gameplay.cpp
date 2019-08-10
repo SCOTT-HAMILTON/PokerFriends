@@ -22,9 +22,11 @@ void GamePlay::startTheGame(QString nickname)
 
 void GamePlay::setWhoseTourIsIt(QString nickname)
 {
+    qDebug() << "It's the turn of " << nickname;
     /*TODO test if player tour is set*/
     if (playersRessource->playerExistWithNickname(nickname) || nickname == "me"){
         tourPlayerNickname = nickname;
+        qDebug() << "YEp, nickname ok for " << nickname;
     }else{
         qDebug() << "Error, GamePlay -> setWhoseTourIsIt : Player nickname doesn't exist " << nickname;
     }

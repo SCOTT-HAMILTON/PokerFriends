@@ -15,14 +15,13 @@ bool PlayersRessource::nicknameExists(const QString &nickname) const
 void PlayersRessource::addPlayer(const QString &nickname, const QString &peerNick)
 {
     players.append(Player(nickname, peerNick));
+    emit playersCountChanged(players);
 }
 
 void PlayersRessource::removePlayer(const QString &peerNick)
 {
-    qDebug() << "erasing peerNick : " << peerNick;
-    qDebug() << "size before : " << players.size();
     players.erase(std::remove_if(players.begin(), players.end(), [&peerNick](const Player &p){ return p.peernickname == peerNick;}));
-    qDebug() << "size after : " << players.size();
+    emit playersCountChanged(players);
 }
 
 void PlayersRessource::setPlayerReady(const QString &peerNick)

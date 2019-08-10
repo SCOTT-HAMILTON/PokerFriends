@@ -32,8 +32,6 @@ public slots:
     void resetNetworkAndEnableInitialMenu();
     void readyToStartTheGame();
 
-    void fetchPlayersToGUI();
-
     void sendGameStarted();
     void implStartTheGame(QString);
     void implStopTheGameBecauseOfNotAllReady();
