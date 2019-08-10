@@ -117,7 +117,7 @@ void Widget::sendGameStarted()
 void Widget::implStartTheGame(QString nickname)
 {
     qDebug() << "The GAME STARTED!!!";
-    gamewidget->hideStartTheGameButton();
+    gamewidget->makeGameStarted();
     gameplay->startTheGame(nickname);
     qDebug() << "given nickname : " << nickname;
     gamewidget->updatePlayerTour(nickname);

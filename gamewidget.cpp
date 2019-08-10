@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <algorithm>
 #include <QQmlContext>
+#include <QQuickItem>
 
 GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidget *parent) :
     QWidget(parent), playersRessource(playersRessource),
@@ -28,14 +29,15 @@ GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidge
     const int screen_pc = 30;
     view->rootContext()->setContextProperty("SCREEN_PERCENT", screen_pc);
     view->move(0, Size::APP_SIZEH-(Size::APP_SIZEH*screen_pc/100));
-    view->setSource(QUrl("qrc:/PlayPanel.qml"));
+    view->setSource(QUrl("qrc:/StartTheGamePanel.qml"));
     if (view->status() == QQuickWidget::Error)
         qDebug() << "Error, view can't load main.qml source !!!";
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
     view->setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH*screen_pc/100);
     view->show();
 
-
+    connect(view->rootObject(), SIGNAL(readyWaiting()), this, SLOT(emitReadyToStartTheGame()));
+    connect(view->rootObject(), SIGNAL(gameStarted()), this, SLOT(emitGameStarted()));
 }
 
 GameWidget::~GameWidget()
@@ -250,19 +252,7 @@ void GameWidget::showStartTheGameButton()
     partyWidget->ui->startTheGameButton->setText(tr("Start the game!!!"));
     startButtonMode = StartButtonMode::START;
     qDebug() << "START THE GAME!!!";
-    switch (startButtonMode){
-    case StartButtonMode::READY: {
-        qDebug("READY");
-        break;
-    }case StartButtonMode::READY_WAITING: {
-        qDebug("READY_WAITING");
-        break;
-    }case StartButtonMode::START: {
-        qDebug("START");
-        break;
-    }
-
-    }
+    QMetaObject::invokeMethod(view->rootObject(), "setAllPlayersReady");
 }
 
 void GameWidget::hideStartTheGameButton()
@@ -291,6 +281,21 @@ void GameWidget::updatePlayerTour(QString nickname)
     }
     qDebug() << "Player turn : " << static_cast<PlayerWidget>(*player).name();
     static_cast<PlayerWidget*>(*player)->setStatusText("My turn...");
+}
+
+void GameWidget::emitReadyToStartTheGame()
+{
+    emit readyToStartTheGame();
+}
+
+void GameWidget::emitGameStarted()
+{
+    emit gameStarted();
+}
+
+void GameWidget::makeGameStarted()
+{
+    QMetaObject::invokeMethod(view->rootObject(), "startTheGame");
 }
 
 

@@ -76,6 +76,7 @@ DISTFILES += \
     BetVerificationPanel.qml \
     FoldVerificationPanel.qml \
     PlayPanel.qml \
+    StartTheGamePanel.qml \
     android/AndroidManifest.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.jar \

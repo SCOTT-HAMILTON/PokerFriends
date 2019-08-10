@@ -32,17 +32,25 @@ signals:
     void gameStarted();
 
 public slots:
-    void fetchPlayers();
+    void updatePlayerTour(QString nickname);
+    void emitReadyToStartTheGame();
+    void emitGameStarted();
+    void makeGameStarted();
+
+
+
+    /* OLD
+     *
+    */
+    void updateNames();
+
     void generateGrid(int nbPlayers);
+    void fetchPlayers();
     void reorder();
     void on_startTheGameButton_clicked();
     void showStartTheGameButton();
     void hideStartTheGameButton();
     void showWaitingForPlayersToBeReady();
-    void updatePlayerTour(QString nickname);
-
-    void updateNames();
-
 private:
     PartyWidget *partyWidget;
 

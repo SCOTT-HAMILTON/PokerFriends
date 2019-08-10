@@ -32,11 +32,7 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
         Layout.alignment: Qt.AlignHCenter
-        Component.onCompleted: {
 
-           betLayOpacityAnim.access.target = [mainLayout, betLay]
-
-        }
         OpacityAnimator {
             id: betLayOpacityAnim
             target: betLay
