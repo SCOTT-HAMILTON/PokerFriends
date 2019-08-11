@@ -6,7 +6,7 @@ import "./" as Path
 
 Rectangle {
     id: window
-    width: APP_SIZEW
+    width: SCREENA_SIZEW
     height: APP_SIZEH*SCREEN_PERCENT/100
     focus: true
     color: "#272822"
@@ -36,7 +36,7 @@ Rectangle {
         id: mainLayout
         anchors.fill: parent
         height: APP_SIZEH
-        width: APP_SIZEW
+        width: SCREENA_SIZEW
         spacing: 0
 
         Label {
@@ -169,11 +169,11 @@ Rectangle {
 
     Path.BetPanel {
         id: betPanel
-        width: APP_SIZEW
+        width: SCREENA_SIZEW
         height: APP_SIZEH*SCREEN_PERCENT/100
         focus: true
         visible: true
-        x: APP_SIZEW
+        x: SCREENA_SIZEW
         onCanceled: {
             betPanelExitAnim.start()
         }
@@ -184,11 +184,11 @@ Rectangle {
 
     Path.FoldVerificationPanel {
         id: foldVerificationPanel
-        width: APP_SIZEW
+        width: SCREENA_SIZEW
         height: APP_SIZEH*SCREEN_PERCENT/100
         focus: true
         visible: true
-        x: APP_SIZEW
+        x: SCREENA_SIZEW
         onCanceled: {
             foldVerificationPanelExitAnim.start()
         }
@@ -212,7 +212,7 @@ Rectangle {
         target: betPanel
         property: "x"
         from: betPanel.x
-        property int exitX: -APP_SIZEW
+        property int exitX: -SCREENA_SIZEW
         to: exitX
         easing.type: Easing.InOutElastic
         duration: 2000
@@ -240,7 +240,7 @@ Rectangle {
         target: foldVerificationPanel
         property: "x"
         from: foldVerificationPanel.x
-        property int exitX: -APP_SIZEW
+        property int exitX: -SCREENA_SIZEW
         to: exitX
         easing.type: Easing.InOutElastic
         duration: 2000

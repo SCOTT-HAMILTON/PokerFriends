@@ -7,16 +7,13 @@ import QtGraphicalEffects 1.12
 import "./" as Path
 
 Rectangle {
-    id: window
-    width: APP_SIZEW
-    color: "#272822"
+    id: mainWindow
+    width: SCREENA_SIZEW
+    height: APP_SIZEH*SCREEN_PERCENT/100
+    color: "#EFEFEF"
     visible: true
-    y: 100
-
-    Material.theme: Material.Dark
-    Material.accent: Material.Pink
-
-    Layout.alignment: Qt.AlignHCenter
+    x: 0
+    y: 0
 
     signal playerBet(var amount)
     signal playerFold()
@@ -43,6 +40,22 @@ Rectangle {
 
     signal gameStarted()
     signal readyWaiting()
+Rectangle {
+    id: window
+    width: SCREENA_SIZEW
+    height: APP_SIZEH*SCREEN_PERCENT/100
+    focus: true
+    color: "#272822"
+    visible: true
+    x: 0
+    y: 100
+
+    Material.theme: Material.Dark
+    Material.accent: Material.Pink
+
+    Layout.alignment: Qt.AlignHCenter
+
+
 
     RowLayout {
         id: buttonsLay
@@ -58,7 +71,7 @@ Rectangle {
         }
         Rectangle {
             id: clippingRect
-            implicitWidth: APP_SIZEW*0.8
+            implicitWidth: SCREENA_SIZEW*0.8
             implicitHeight: 40*SIZE_FACTOR
             clip: true
 
@@ -121,7 +134,7 @@ Rectangle {
                     onFinished:{
                         if (startTheGameButton.buttonMode == "READY_WAITING"){
                             clippingRect.enabled = false
-                            readyWaiting()
+                            mainWindow.readyWaiting()
                         }
                         if (startTheGameButton.buttonMode == "START"){
                             console.log("yep start")
@@ -154,7 +167,7 @@ Rectangle {
                     if (startTheGameButton.buttonMode == "STARTED"){
                         startTheGameButton.buttonMode = "STARTED_BY_US"
                         startTheGameButtonOpacityAnim.start()
-                        gameStarted()
+                        mainWindow.gameStarted()
                     }
                     else startTheGameButtonPaddingAnimation.start()
 
@@ -171,18 +184,18 @@ Rectangle {
 
     Path.PlayPanel{
         id: playPanel
-        width: APP_SIZEW
+        width: SCREENA_SIZEW
         height: APP_SIZEH*SCREEN_PERCENT/100
         focus: true
         visible: true
-        x: APP_SIZEW
+        x: SCREENA_SIZEW
         onBet: {
-            playerBet(amount)
+            mainWindow.playerBet(amount)
             windowSlidingDownAnim.start()
         }
 
         onFold: {
-            playerFold()
+            mainWindow.playerFold()
             windowSlidingDownAnim.start()
         }
     }
@@ -207,7 +220,6 @@ Rectangle {
         duration: 1000
         onFinished: {
             if (startTheGameButton.buttonMode == "STARTED_BY_US"){
-
                 playPanelEntryAnim.start()
             }
 
@@ -228,4 +240,5 @@ Rectangle {
 
         }
     }
+}
 }

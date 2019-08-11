@@ -11,14 +11,21 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QApplication>
+#include <QDesktopWidget>
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent), gamewidget(nullptr)
 {
-    setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
-
-
+        // Resize refer to desktop
+    resize( Size::SCREENA_SIZEW, Size::SCREENA_SIZEH );
+    mainLay = new QVBoxLayout;
+    mainLay->setMargin(0);
     view = new QQuickWidget(this);
+    view->move(Size::APP_X, Size::APP_Y);
+    view->rootContext()->setContextProperty("APP_X", Size::APP_X);
+    view->rootContext()->setContextProperty("APP_Y", Size::APP_Y);
+    view->rootContext()->setContextProperty("SCREENA_SIZEW", Size::SCREENA_SIZEW);
+    view->rootContext()->setContextProperty("SCREENA_SIZEH", Size::SCREENA_SIZEH);
     view->rootContext()->setContextProperty("APP_SIZEW", Size::APP_SIZEW);
     view->rootContext()->setContextProperty("APP_SIZEH", Size::APP_SIZEH);
     view->rootContext()->setContextProperty("SIZE_FACTOR", Size::SIZE_FACTOR);
@@ -27,7 +34,6 @@ Widget::Widget(QWidget *parent) :
     if (view->status() == QQuickWidget::Error)
         qDebug() << "Error, view can't load main.qml source !!!";
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
-    view->setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
 
     playersRessource = new PlayersRessource(this);
     networkProtocol  = new NetworkProtocol(playersRessource);
@@ -49,7 +55,8 @@ Widget::Widget(QWidget *parent) :
     connect(networkProtocol, &NetworkProtocol::allPlayersAreReady,
             this, &Widget::showStartTheGameButton);
 
-    view->show();
+    mainLay->addWidget(view);
+    setLayout(mainLay);
 
 }
 
@@ -73,10 +80,10 @@ void Widget::switchToGameParty()
     if (!gamewidget){
         gamewidget = new GameWidget(playersRessource, 7, this);
         connect(gamewidget, &GameWidget::readyToStartTheGame, this, &Widget::readyToStartTheGame);
-        connect(networkProtocol, &NetworkProtocol::waitingForPlayersToBeReady,
-                gamewidget, &GameWidget::showWaitingForPlayersToBeReady);
         connect(gamewidget, &GameWidget::gameStarted, this, &Widget::sendGameStarted);
+        mainLay->addWidget(gamewidget);
     }
+    view->hide();
     gamewidget->show();
 }
 

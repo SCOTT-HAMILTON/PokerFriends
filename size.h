@@ -30,6 +30,8 @@ public slots:
 public:
     static int APP_SIZEW;
     static int APP_SIZEH;
+    static int SCREENA_SIZEW;
+    static int SCREENA_SIZEH;
     static double SIZE_FACTOR;
     static int APP_X;
     static int APP_Y;

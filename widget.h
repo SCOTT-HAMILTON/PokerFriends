@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QTimer>
 #include <QQuickView>
+#include <QVBoxLayout>
 
 #include "client.h"
 #include "initialmenu.h"
@@ -39,6 +40,8 @@ public slots:
     void showStartTheGameButton();
 
 private:
+    QVBoxLayout *mainLay;
+
     GameWidget* gamewidget;
     GamePlay* gameplay;
 

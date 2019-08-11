@@ -6,18 +6,28 @@ import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.13
 
 Rectangle {
+    id: mainWindow
+    width: APP_SIZEW
+    height: APP_SIZEH
+    color: "#272822"
+    visible: true
+    x: 0
+    y: 0
+
+    signal joinLocalServer()
+
+Rectangle {
     id: window
     width: APP_SIZEW
     height: APP_SIZEH
     focus: true
     color: "#272822"
     visible: true
-
+    x: APP_X
+    y: APP_Y
 
     Material.theme: Material.Dark
     Material.accent: Material.Pink
-
-    signal joinLocalServer()
 
     ColumnLayout {
         id: mainLayout
@@ -106,7 +116,7 @@ Rectangle {
             }
 
             onClicked: {
-                window.joinLocalServer()
+                mainWindow.joinLocalServer()
             }
         }
         Item {
@@ -115,4 +125,5 @@ Rectangle {
             implicitHeight: 200*SIZE_FACTOR
         }
     }
+}
 }

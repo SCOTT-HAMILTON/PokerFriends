@@ -1,6 +1,7 @@
 #include "gamewidget.h"
 #include "size.h"
 #include "ui_gamewidget.h"
+#include <QDesktopWidget>
 
 #include <QDebug>
 #include <algorithm>
@@ -12,10 +13,18 @@ GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidge
     QWidget(parent), playersRessource(playersRessource),
     startButtonMode(StartButtonMode::READY)
 {
-    setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH);
+    QPalette pa(QColor(239, 239, 239));
+    setPalette(pa);
+    resize( Size::SCREENA_SIZEW, Size::SCREENA_SIZEH );
+    setAutoFillBackground(true);
 
+    mainLay = new QVBoxLayout;
+    mainLay->setMargin(0);
+    const int screen_pc = 30;
     partyWidget = new PartyWidget(this);
-    partyWidget->hide();
+    partyWidget->setAutoFillBackground(true);
+    partyWidget->resize(Size::APP_SIZEW, Size::APP_SIZEH-(Size::APP_SIZEH*screen_pc/100));
+    mainLay->addWidget(partyWidget);
 
     generateGrid(nbPlayers);
     fetchPlayers();
@@ -23,22 +32,27 @@ GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidge
     connect(playersRessource, &PlayersRessource::playersCountChanged, this, &GameWidget::fetchPlayers);
 
     view = new QQuickWidget(this);
-    view->setWindowFlags(Qt::WindowStaysOnTopHint);
+    view->setMaximumSize(Size::SCREENA_SIZEW, Size::APP_SIZEH*screen_pc/100);
+    view->rootContext()->setContextProperty("APP_X", Size::APP_X);
+    view->rootContext()->setContextProperty("APP_Y", Size::APP_Y);
+    view->rootContext()->setContextProperty("SCREENA_SIZEW", Size::SCREENA_SIZEW);
+    view->rootContext()->setContextProperty("SCREENA_SIZEH", Size::SCREENA_SIZEH);
     view->rootContext()->setContextProperty("APP_SIZEW", Size::APP_SIZEW);
     view->rootContext()->setContextProperty("APP_SIZEH", Size::APP_SIZEH);
     view->rootContext()->setContextProperty("SIZE_FACTOR", Size::SIZE_FACTOR);
-    const int screen_pc = 30;
+
     view->rootContext()->setContextProperty("SCREEN_PERCENT", screen_pc);
-    view->move(0, Size::APP_SIZEH-(Size::APP_SIZEH*screen_pc/100));
     view->setSource(QUrl("qrc:/StartTheGamePanel.qml"));
     if (view->status() == QQuickWidget::Error)
         qDebug() << "Error, view can't load main.qml source !!!";
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
-    view->setFixedSize(Size::APP_SIZEW, Size::APP_SIZEH*screen_pc/100);
     view->show();
+    mainLay->addWidget(view);
 
     connect(view->rootObject(), SIGNAL(readyWaiting()), this, SLOT(emitReadyToStartTheGame()));
     connect(view->rootObject(), SIGNAL(gameStarted()), this, SLOT(emitGameStarted()));
+
+    setLayout(mainLay);
 }
 
 GameWidget::~GameWidget()
@@ -254,25 +268,8 @@ void GameWidget::on_startTheGameButton_clicked()
 
 void GameWidget::showStartTheGameButton()
 {
-    partyWidget->ui->startTheGameButton->show();
-    partyWidget->ui->startTheGameButton->setEnabled(true);
-    partyWidget->ui->startTheGameButton->setText(tr("Start the game!!!"));
-    startButtonMode = StartButtonMode::START;
     qDebug() << "START THE GAME!!!";
     QMetaObject::invokeMethod(view->rootObject(), "setAllPlayersReady");
-}
-
-void GameWidget::hideStartTheGameButton()
-{
-    partyWidget->ui->startTheGameButton->hide();
-}
-
-void GameWidget::showWaitingForPlayersToBeReady()
-{
-    qDebug() << "WAITING...";
-    startButtonMode = StartButtonMode::READY_WAITING;
-    partyWidget->ui->startTheGameButton->setText(tr("Waiting for players to be ready..."));
-    partyWidget->ui->startTheGameButton->setEnabled(false);
 }
 
 void GameWidget::updatePlayerTour(QString nickname)

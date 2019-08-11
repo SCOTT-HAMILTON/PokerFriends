@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.12
 
 Rectangle {
     id: window
-    width: APP_SIZEW
+    width: SCREENA_SIZEW
     height: APP_SIZEH*SCREEN_PERCENT/100
     focus: true
     color: "#272833"
@@ -23,7 +23,7 @@ Rectangle {
         id: mainLayout
         anchors.fill: parent
         height: APP_SIZEH
-        width: APP_SIZEW
+        width: SCREENA_SIZEW
         spacing: 0
         Layout.alignment: Qt.AlignHCenter
 
@@ -31,7 +31,7 @@ Rectangle {
             id: verificationLabel
             objectName: "verificationLabel"
             text: "Are you sure you wanna bet ?"
-            width: APP_SIZEW
+            width: SCREENA_SIZEW
             font.pixelSize: 20*SIZE_FACTOR
             font.bold: true
             font.family: "Roboto"

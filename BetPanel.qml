@@ -7,7 +7,7 @@ import "./" as Path
 
 Rectangle {
     id: window
-    width: APP_SIZEW
+    width: SCREENA_SIZEW
     height: APP_SIZEH*SCREEN_PERCENT/100
     focus: true
     color: "#272833"
@@ -170,7 +170,7 @@ Rectangle {
 
     Path.BetVerificationPanel {
         id: betVerificationPanel
-        width: APP_SIZEW
+        width: SCREENA_SIZEW
         height: APP_SIZEH*SCREEN_PERCENT/100
         focus: true
         color: "#272833"

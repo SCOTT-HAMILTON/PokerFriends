@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QQuickWidget>
 #include <QDialog>
+#include <QVBoxLayout>
 
 #include "playerwidget.h"
 #include "player.h"
@@ -49,9 +50,9 @@ public slots:
     void reorder();
     void on_startTheGameButton_clicked();
     void showStartTheGameButton();
-    void hideStartTheGameButton();
-    void showWaitingForPlayersToBeReady();
+
 private:
+    QVBoxLayout *mainLay;
     PartyWidget *partyWidget;
 
     enum class StartButtonMode{

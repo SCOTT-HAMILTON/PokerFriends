@@ -5,6 +5,8 @@
 
 int Size::APP_SIZEW = 360;
 int Size::APP_SIZEH = 720;
+int Size::SCREENA_SIZEW;
+int Size::SCREENA_SIZEH;
 
 #ifdef ANDROID_SIZE
     double Size::SIZE_FACTOR = 1;
@@ -21,6 +23,8 @@ void Size::updateSize()
     {
         int w = QGuiApplication::screens().first()->availableSize().width();
         int h = QGuiApplication::screens().first()->availableSize().height();
+        Size::SCREENA_SIZEW = w;
+        Size::SCREENA_SIZEH = h;
 #ifdef Q_OS_ANDROID
         //LANDSCAPE VIEW or less than 18:9 (like 16:9)
         if (w>=h/2){
@@ -42,16 +46,14 @@ void Size::updateSize()
         Size::APP_SIZEW = h*720/1310;
         Size::SIZE_FACTOR = static_cast<double>(Size::APP_SIZEH)/655.0;
 
+        Size::SCREENA_SIZEW = APP_SIZEW;
+        Size::SCREENA_SIZEH = APP_SIZEH;
+
 #endif
 
     }
     qDebug() << "SIZE_FACTOR : " << Size::SIZE_FACTOR;
     qDebug() << "APP SIZE : " << Size::APP_SIZEW << ", " << Size::APP_SIZEH;
-//    Size::APP_SIZEW = 720;
-//    Size::APP_SIZEH = 1310;
-//    Size::APP_X = 0;
-//    Size::SIZE_FACTOR = 2;
-//    qDebug() << "SIZE_FACTOR : " << Size::SIZE_FACTOR;
-//    qDebug() << "APP SIZE : " << Size::APP_SIZEW << ", " << Size::APP_SIZEH;
-//
+    qDebug() << "APP SIZE : " << Size::SCREENA_SIZEW << ", " << Size::SCREENA_SIZEH;
+
 }
