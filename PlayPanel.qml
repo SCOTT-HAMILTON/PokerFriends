@@ -26,6 +26,9 @@ Rectangle {
         foldButton.visible    = true
     }
 
+    signal bet(var amount)
+    signal fold()
+
     Material.theme: Material.Dark
     Material.accent: Material.Pink
 
@@ -174,6 +177,9 @@ Rectangle {
         onCanceled: {
             betPanelExitAnim.start()
         }
+        onBetValidated: {
+            bet(amount)
+        }
     }
 
     Path.FoldVerificationPanel {
@@ -185,6 +191,9 @@ Rectangle {
         x: APP_SIZEW
         onCanceled: {
             foldVerificationPanelExitAnim.start()
+        }
+        onValidated: {
+            fold()
         }
     }
 

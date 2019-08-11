@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QStringList>
 
 GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidget *parent) :
     QWidget(parent), playersRessource(playersRessource),
@@ -113,11 +114,17 @@ void GameWidget::updateNames()
     auto list = playersRessource->getPlayers();
     if (list.size()+1 != players.size()){
         qDebug() << "Error GameWidget->updateNames : playerswiget list and players list don't have the same size";
+        return;
     }
-    static_cast<PlayerWidget*>(players[0])->setName("me");
+    QStringList nicknameOrderedString;
+    nicknameOrderedString.reserve(list.size()+1);
+    nicknameOrderedString.push_back("me");
 
-    for (int i =1; i < players.size(); i++){
-        static_cast<PlayerWidget*>(players[i])->setName(list[i-1].nickname);
+    for (auto &str : list){
+        nicknameOrderedString.push_back(str.nickname);
+    }
+    for (int i = 0; i < nicknameOrderedString.size(); i++){
+        static_cast<PlayerWidget*>(players[i])->setName(nicknameOrderedString[i]);
     }
 }
 
@@ -279,7 +286,7 @@ void GameWidget::updatePlayerTour(QString nickname)
         qDebug() << "Erro GameWidget->updatePlayerTour : not found PlayerWidget with nickname " << nickname;
         return;
     }
-    qDebug() << "Player turn : " << static_cast<PlayerWidget>(*player).name();
+    qDebug() << "Player turn : " << static_cast<PlayerWidget*>(*player)->name();
     static_cast<PlayerWidget*>(*player)->setStatusText("My turn...");
 }
 

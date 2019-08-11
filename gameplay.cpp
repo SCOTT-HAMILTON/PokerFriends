@@ -14,6 +14,11 @@ bool GamePlay::isTheGameStarted() const
     return gameStarted;
 }
 
+QString GamePlay::getTourPlayerNickname() const
+{
+    return tourPlayerNickname;
+}
+
 void GamePlay::startTheGame(QString nickname)
 {
     setWhoseTourIsIt(nickname);

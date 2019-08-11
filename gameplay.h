@@ -15,6 +15,7 @@ public:
     explicit GamePlay(PlayersRessource* playersRessource, QObject *parent = nullptr);
 
     bool isTheGameStarted() const;
+    QString getTourPlayerNickname() const;
 
 signals:
 

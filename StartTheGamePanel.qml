@@ -9,8 +9,6 @@ import "./" as Path
 Rectangle {
     id: window
     width: APP_SIZEW
-    height: 10
-    focus: true
     color: "#272822"
     visible: true
     y: 100
@@ -19,6 +17,9 @@ Rectangle {
     Material.accent: Material.Pink
 
     Layout.alignment: Qt.AlignHCenter
+
+    signal playerBet(var amount)
+    signal playerFold()
 
     function setAllPlayersReady(){
         while (startTheGameButtonPaddingAnimation.running);
@@ -29,8 +30,15 @@ Rectangle {
         startTheGameButton.buttonMode = "STARTED"
     }
 
-    function startTheGame(){
+    function popPlayPanel(){
         windowSlidingAnim.start()
+    }
+
+    function startTheGame(){
+        if (startTheGameButton.buttonMode !== "STARTED_BY_US"){
+            windowSlidingDownAnim.start()
+            clippingRect.visible = false
+        }
     }
 
     signal gameStarted()
@@ -57,6 +65,8 @@ Rectangle {
             Layout.margins: 0
             Layout.alignment: Qt.AlignLeft
             Layout.topMargin: 30*SIZE_FACTOR
+
+            color: window.color
 
             Button {
                 id: startTheGameButton
@@ -85,6 +95,18 @@ Rectangle {
                     else
                         Material.accent = Material.Brown
                     hover = !hover
+                }
+
+                OpacityAnimator {
+                    id: startTheGameButtonOpacityAnim
+                    target: startTheGameButton
+                    from: 1
+                    to: 0
+                    duration: 1000
+                    easing.type: Easing.OutQuad
+                    onFinished: {
+                        windowSlidingAnim.start()
+                    }
                 }
 
                 PropertyAnimation {
@@ -123,16 +145,16 @@ Rectangle {
                             startTheGameButtonPaddingAnimation.from = 12*SIZE_FACTOR
                             startTheGameButtonPaddingAnimation.to = startTheGameButton.height*2
                             startTheGameButtonPaddingAnimation.duration =
-                                    startTheGameButtonPaddingAnimation.myduration
+                            startTheGameButtonPaddingAnimation.myduration
                         }
                     }
                 }
 
                 onClicked: {
                     if (startTheGameButton.buttonMode == "STARTED"){
-                        gameStarted()
                         startTheGameButton.buttonMode = "STARTED_BY_US"
-                        windowSlidingAnim.start()
+                        startTheGameButtonOpacityAnim.start()
+                        gameStarted()
                     }
                     else startTheGameButtonPaddingAnimation.start()
 
@@ -154,6 +176,15 @@ Rectangle {
         focus: true
         visible: true
         x: APP_SIZEW
+        onBet: {
+            playerBet(amount)
+            windowSlidingDownAnim.start()
+        }
+
+        onFold: {
+            playerFold()
+            windowSlidingDownAnim.start()
+        }
     }
 
     PropertyAnimation {
@@ -172,6 +203,23 @@ Rectangle {
         property: "y"
         from: window.y
         to: 0
+        easing.type: Easing.OutCubic
+        duration: 1000
+        onFinished: {
+            if (startTheGameButton.buttonMode == "STARTED_BY_US"){
+
+                playPanelEntryAnim.start()
+            }
+
+        }
+    }
+
+    PropertyAnimation {
+        id: windowSlidingDownAnim
+        target: window
+        property: "y"
+        from: window.y
+        to: window.height
         easing.type: Easing.OutCubic
         duration: 1000
         onFinished: {

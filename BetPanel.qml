@@ -25,6 +25,8 @@ Rectangle {
         mainLayout.visible     = true
     }
 
+    signal betValidated(var amount)
+
     signal canceled()
 
     ColumnLayout {
@@ -176,6 +178,9 @@ Rectangle {
         y: APP_SIZEH
         onCanceled: {
             betVerificationPanelExitAnim.start()
+        }
+        onValidated: {
+            window.betValidated(betSpinBox.value)
         }
     }
 
