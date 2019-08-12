@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QList>
+#include <iostream>
+#include <QDebug>
 
 class Player{
 public:
@@ -10,6 +12,12 @@ public:
         nickname(nick), peernickname(peerNick), ready(ready)
     {
     }
+
+    friend QDebug& operator<<(QDebug& os, const Player player){
+        os << player.nickname <<'('<< player.peernickname << ')';
+        return os;
+    }
+
     QString nickname;
     QString peernickname;
     bool ready;

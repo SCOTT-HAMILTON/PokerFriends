@@ -8,7 +8,7 @@ class PlayersRessource : public QObject
 {
     Q_OBJECT
 public:
-    explicit PlayersRessource(QObject *parent = nullptr);
+    explicit PlayersRessource(const QString &nickname, QObject *parent = nullptr);
 
     /* *ACCESS*   */
     bool nicknameExists(const QString &nickname) const;
@@ -23,11 +23,16 @@ public:
     QString playersReport() const;
     bool isPlayerReady(const QString &peerNick) const;
     bool allPlayersAreReady() const;
+    int getPlayerIndex() const;
 
     /* *MODIFYING */
     void addPlayer(const QString &nickname, const QString &peernick);
     void removePlayer(const QString &peernick);
     void setPlayerReady(const QString &peerNick);
+    void setNickname(const QString &nickname);
+
+    /* getter setter */
+
 
 
 signals:
@@ -36,7 +41,11 @@ signals:
 public slots:
 
 private:
+    void reorder();
+
+    QString myNickname;
     QList<Player> players;
+    int playerIndex;
 };
 
 #endif // PLAYERSRESSOURCE_H

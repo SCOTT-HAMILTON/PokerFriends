@@ -35,7 +35,7 @@ Widget::Widget(QWidget *parent) :
         qDebug() << "Error, view can't load main.qml source !!!";
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
-    playersRessource = new PlayersRessource(this);
+    playersRessource = new PlayersRessource("", this);
     networkProtocol  = new NetworkProtocol(playersRessource);
     gameplay         = new GamePlay(playersRessource);
     QObject *window = view->rootObject();
@@ -73,7 +73,7 @@ void Widget::switchToGameParty()
     }
     else qDebug() << "Error, nicknameInput is nullptr";
 
-
+    playersRessource->setNickname(nick);
     networkProtocol->enable();
     networkProtocol->startConnection(nick);
     view->hide();

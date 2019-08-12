@@ -130,15 +130,13 @@ void GameWidget::updateNames()
         qDebug() << "Error GameWidget->updateNames : playerswiget list and players list don't have the same size";
         return;
     }
-    QStringList nicknameOrderedString;
-    nicknameOrderedString.reserve(list.size()+1);
-    nicknameOrderedString.push_back("me");
-
-    for (auto &str : list){
-        nicknameOrderedString.push_back(str.nickname);
+    static_cast<PlayerWidget*>(players[0])->setName("me");
+    int index = 1;
+    for (int i = playersRessource->getPlayerIndex(); i < list.size(); i++,index++){
+        static_cast<PlayerWidget*>(players[index])->setName(list[i].nickname);
     }
-    for (int i = 0; i < nicknameOrderedString.size(); i++){
-        static_cast<PlayerWidget*>(players[i])->setName(nicknameOrderedString[i]);
+    for (int i = 0; i < playersRessource->getPlayerIndex() && i < list.size(); i++,index++){
+        static_cast<PlayerWidget*>(players[index])->setName(list[i].nickname);
     }
 }
 
