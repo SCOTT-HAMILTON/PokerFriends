@@ -1,11 +1,6 @@
 # Pokerfriends 
 <img src="https://img.shields.io/badge/Status-Work%20in%20progress-brightgreen?style=for-the-badge&logo=appveyor" align="right">
 
-
-
-
-
-
 Why would you need any cards and poker chips to player Poker with your friends ?
 
 > Pokerfriends is a multiplayer pokergame, and it is really simple to use.

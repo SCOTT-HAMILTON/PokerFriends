@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>asset/cards_deck.jpg</file>
+        <file>asset/player.gltf</file>
+        <file>asset/poker_table.gltf</file>
+        <file>asset/single_card.gltf</file>
+    </qresource>
+</RCC>

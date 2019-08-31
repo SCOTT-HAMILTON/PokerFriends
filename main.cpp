@@ -2,18 +2,39 @@
 #include <QQuickView>
 #include <QQmlContext>
 #include <QQmlEngine>
-#include "widget.h"
-#include "size.h"
+#include "ui/widget.h"
+#include "ui/size.h"
 
 #include <QtCore/QSettings>
 #include <QtNetwork/QNetworkConfigurationManager>
 #include <QtNetwork/QNetworkSession>
+
+#include <QOpenGLContext>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     qputenv("QT_QUICK_CONTROLS_STYLE", "material");
+
+    QSurfaceFormat format;
+    if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL) { // Learn OpenGL
+        format.setRenderableType(QSurfaceFormat::OpenGL);
+        format.setVersion(3, 3);
+        format.setProfile(QSurfaceFormat::CoreProfile);
+        format.setSamples(4);
+        qDebug() << "OPENGL version : " << format.version();
+    } else if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGLES) { // Learn OpenGLES??
+        format.setRenderableType(QSurfaceFormat::OpenGLES);
+        format.setVersion(3, 1);
+        format.setSamples(0);
+        qDebug() << "OPENGLES version : " << format.version();
+    }
+//    format.setAlphaBufferSize(0);
+//    format.setDepthBufferSize(0);
+    format.setStencilBufferSize(0);
+//    format.setSwapInterval(0); // Full speed rendering
+    QSurfaceFormat::setDefaultFormat(format);
 
     Size::updateSize();
 
