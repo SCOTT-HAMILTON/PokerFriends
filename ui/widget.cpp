@@ -78,7 +78,7 @@ void Widget::switchToGameParty()
     networkProtocol->startConnection(nick);
     view->hide();
     if (!gamewidget){
-        gamewidget = new GameWidget(playersRessource, 7, this);
+        gamewidget = new GameWidget(playersRessource, this);
         connect(gamewidget, &GameWidget::readyToStartTheGame, this, &Widget::readyToStartTheGame);
         connect(gamewidget, &GameWidget::gameStarted, this, &Widget::sendGameStarted);
         mainLay->addWidget(gamewidget);

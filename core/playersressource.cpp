@@ -47,12 +47,12 @@ void PlayersRessource::reorder()
     qDebug() << " >> ordered input >> " << players;
     QMap<QString, int> nicknameOrderedMap;
     nicknameOrderedMap.insert(myNickname, -1);
-    for (int i = 0; i < players.size(); i++){
+    for (int i = 0; i < players.size(); ++i){
         nicknameOrderedMap.insert(QString(players[i].nickname), i);
     }
     QList<Player> tmp;
     tmp.reserve(players.size()+1);
-    for (int i = 0, size = players.size()+1; i < size; i++){
+    for (int i = 0, size = players.size()+1; i < size; ++i){
         tmp.push_back(Player{"", ""});
     }
     int i = 0;
@@ -62,7 +62,7 @@ void PlayersRessource::reorder()
             tmp[i] = Player{myNickname, "nopeerlol"};
         }
         else tmp[i] = players[index];
-        i++;
+        ++i;
     }
     players.clear();
     for (auto &player : tmp){

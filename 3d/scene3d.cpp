@@ -31,9 +31,8 @@ Scene3D::Scene3D(const QSize& size, QWidget *parent) : QWidget(parent),
     camera->addComponent(camTransform);
     {
         setCameraOrbitAnimation(&cameraOrbitAnim);
-//        cameraOrbitAnim.start();
-        startCamOrbitAnim();
-        startPlayersEntryAnim();
+//        startCamOrbitAnim();
+//        startPlayersEntryAnim();
 //        startCardsDistributionAnim();
     }
     //SceneRoot Components
@@ -54,7 +53,6 @@ Scene3D::Scene3D(const QSize& size, QWidget *parent) : QWidget(parent),
     cardsDistributionDelay.setInterval(5000);
     cardsDistributionDelay.setSingleShot(true);
     connect(&cardsDistributionDelay, &QTimer::timeout, this, &Scene3D::startCardsDistributionAnim);
-    cardsDistributionDelay.start();
 
     view->setRootEntity(scene);
 }
@@ -319,7 +317,7 @@ void Scene3D::enablePlayer(size_t player)
 
 void Scene3D::animateNextCardDistribution()
 {
-    currentDistributedCard++;
+    ++currentDistributedCard;
 
     std::vector<SingleCardEntity*> enabled_singlecards(singleCards.size());
     std::vector<SingleCardEntity*>::iterator it =

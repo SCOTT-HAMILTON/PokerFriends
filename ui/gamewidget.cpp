@@ -9,7 +9,7 @@
 #include <QQuickItem>
 #include <QStringList>
 
-GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidget *parent) :
+GameWidget::GameWidget(PlayersRessource *playersRessource, QWidget *parent) :
     QWidget(parent), playersRessource(playersRessource),
     startButtonMode(StartButtonMode::READY)
 {
@@ -24,7 +24,7 @@ GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidge
     partyWidget = new PartyWidget(QSize(Size::SCREENA_SIZEW, Size::APP_SIZEH-(Size::APP_SIZEH*(screen_pc)/100)), this);
     partyWidget->setAutoFillBackground(true);
     partyWidget->setMinimumWidth(Size::APP_SIZEW);
-    qDebug() << "partyWidget size : " << partyWidget->size();
+    updatePartyPlayersCount();
     mainLay->addWidget(partyWidget);
 
     view = new QQuickWidget(this);
@@ -47,6 +47,9 @@ GameWidget::GameWidget(PlayersRessource *playersRessource, int nbPlayers, QWidge
 
     connect(view->rootObject(), SIGNAL(readyWaiting()), this, SLOT(emitReadyToStartTheGame()));
     connect(view->rootObject(), SIGNAL(gameStarted()), this, SLOT(emitGameStarted()));
+
+    connect(playersRessource, &PlayersRessource::playersCountChanged,
+            this, &GameWidget::updatePartyPlayersCount);
 
     setLayout(mainLay);
 }
@@ -108,6 +111,12 @@ void GameWidget::showStartTheGameButton()
 {
     qDebug() << "START THE GAME!!!";
     QMetaObject::invokeMethod(view->rootObject(), "setAllPlayersReady");
+}
+
+void GameWidget::updatePartyPlayersCount()
+{
+    partyWidget->updatePlayersCount(
+                static_cast<size_t>(playersRessource->playersCount()));
 }
 
 void GameWidget::emitReadyToStartTheGame()

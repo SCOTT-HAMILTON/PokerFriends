@@ -15,10 +15,12 @@ public:
 signals:
 
 public slots:
+    void updatePlayersCount(size_t playersCount);
 
 public:
     QVBoxLayout* mainLay;
     Scene3D* scene3D;
+    size_t previousPlayersCount;
 };
 
 #endif // PARTYWIDGET_H

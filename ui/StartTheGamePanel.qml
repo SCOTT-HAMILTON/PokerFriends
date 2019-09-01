@@ -143,7 +143,7 @@ Rectangle {
                         else if (button.buttonMode === "READY"){
                             button.buttonMode = "READY_WAITING"
                             startTheGameButtonText.text = "Waiting for other players to be ready..."
-                            .from = -button.height*0.7
+                            animation.from = -button.height*0.7
                             animation.to = 12*SIZE_FACTOR
                             animation.duration = animation.myduration/2
                             animation.start()

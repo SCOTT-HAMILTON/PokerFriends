@@ -38,7 +38,7 @@ void FpsCounterEntity::updateFps()
 {
     frameCounterAvg += frameCounter;
     fps = frameCounter/2;
-    counter++;
+    ++counter;
     frameCounter = 0;
     if (counter >= 3) {
         fpsAvg = frameCounterAvg/(2*counter);

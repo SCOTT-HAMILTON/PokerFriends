@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/BetPanel.qml</file>
+        <file>ui/BetVerificationPanel.qml</file>
+        <file>ui/FoldVerificationPanel.qml</file>
+        <file>ui/main.qml</file>
+        <file>ui/PlayPanel.qml</file>
+        <file>ui/StartTheGamePanel.qml</file>
+    </qresource>
+</RCC>

@@ -24,7 +24,7 @@ class GameWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit GameWidget(PlayersRessource *playersRessource, int nbPlayers = 8, QWidget *parent = nullptr);
+    explicit GameWidget(PlayersRessource *playersRessource, QWidget *parent = nullptr);
     ~GameWidget();
     GridPos indexToPos(int index);
 
@@ -37,6 +37,7 @@ public slots:
     void emitGameStarted();
     void makeGameStarted();
     void showStartTheGameButton();
+    void updatePartyPlayersCount();
 
 private:
     QVBoxLayout *mainLay;
